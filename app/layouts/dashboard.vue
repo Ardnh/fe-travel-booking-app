@@ -95,6 +95,10 @@ const groups = computed(() => [
     }
 ])
 
+const showModal = () => {
+    open.value = !open.value
+}
+
 onMounted(async () => {
     const cookie = useCookie('cookie-consent')
     if (cookie.value === 'accepted') {
@@ -120,7 +124,6 @@ onMounted(async () => {
     })
 })
 </script>
-
 <template>
     <UDashboardGroup unit="rem">
         <UDashboardSidebar
@@ -132,7 +135,7 @@ onMounted(async () => {
             :ui="{ footer: 'lg:border-t lg:border-default' }"
         >
             <template #header="{ collapsed }">
-                <TeamsMenu :collapsed="collapsed" />
+                <!-- <TeamsMenu :collapsed="collapsed" /> -->
             </template>
 
             <template #default="{ collapsed }">
@@ -156,7 +159,17 @@ onMounted(async () => {
             </template>
 
             <template #footer="{ collapsed }">
-                <UserMenu :collapsed="collapsed" />
+                <UButton
+                    :avatar="{
+                        src: 'https://github.com/benjamincanac.png',
+                        loading: 'lazy' as const
+                    }"
+                    :label="collapsed ? undefined : 'Benjamin'"
+                    color="neutral"
+                    variant="ghost"
+                    class="w-full"
+                    :block="collapsed"
+                />
             </template>
         </UDashboardSidebar>
 
@@ -170,6 +183,16 @@ onMounted(async () => {
                     </template>
 
                     <template #right>
+                        <UButton 
+                            v-if="activePageName !== 'Dashboard'" 
+                            icon="i-lucide-plus" 
+                            size="md" 
+                            color="primary" 
+                            variant="solid"
+                            @click="showModal()"
+                        >
+                            New {{ activePageName }}
+                        </UButton>
                         <UColorModeButton />
                     </template>
                 </UDashboardNavbar>
@@ -179,7 +202,20 @@ onMounted(async () => {
                 <slot />
             </template>
         </UDashboardPanel>
-
-        <NotificationsSlideover />
     </UDashboardGroup>
+
+    <UModal 
+        v-model:open="open" 
+        title="Modal with footer" 
+        :ui="{ footer: 'justify-end' }"
+    >
+        <template #body>
+            <div class="">{{ activePageName }}</div>
+        </template>
+
+        <template #footer="{ close }">
+            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+            <UButton label="Submit" color="neutral" />
+        </template>
+    </UModal>
 </template>
