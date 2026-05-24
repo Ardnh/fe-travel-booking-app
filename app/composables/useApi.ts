@@ -1,37 +1,41 @@
-// ~/composables/useApi.ts
+import { storage } from "~/utils";
 export const useApi = () => {
-    const config = useRuntimeConfig()
-    const token = useCookie('token')
-    const tenantId = useCookie('tenant_id')
+    const config = useRuntimeConfig();
+    const token = storage.getString("token");
 
     const api = $fetch.create({
         baseURL: config.public.apiBase,
-
         onRequest({ options }) {
-            if (token.value) {
-                options.headers.set('Authorization', `Bearer ${token.value}`)
+            if (token) {
+                options.headers.set("Authorization", `Bearer ${token}`);
             }
-            if (tenantId.value) {
-                options.headers.set('X-Tenant-ID', tenantId.value)
-            }
+            // if (tenantId.value) {
+            //     options.headers.set('X-Tenant-ID', tenantId.value)
+            // }
         },
 
         onResponseError({ response }) {
             if (response.status === 401) {
-                token.value = null
-                navigateTo('/login')
+                // storage.clear();
+                navigateTo("/login");
             }
             if (response.status === 403) {
-                throw createError({ statusCode: 403, message: 'Akses ditolak' })
+                throw createError({
+                    statusCode: 403,
+                    message: "Akses ditolak",
+                });
             }
             if (response.status === 404) {
-                throw createError({ statusCode: 404, message: 'Tidak ditemukan' })
+                throw createError({
+                    statusCode: 404,
+                    message: "Tidak ditemukan",
+                });
             }
             if (response.status === 500) {
-                throw createError({ statusCode: 500, message: 'Server error' })
+                throw createError({ statusCode: 500, message: "Server error" });
             }
         },
-    })
+    });
 
-    return { api }
-}
+    return { api };
+};

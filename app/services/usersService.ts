@@ -1,14 +1,13 @@
 import { useUsersRepository } from "~/repositories/usersRepository";
 
 export const useUsersService = () => {
+    const repo = useUsersRepository();
 
-    const repo = useUsersRepository()
-
-    const getUserProfile = () => {
-        return repo.getUserProfile()
-    }
+    const getUserProfile = async () => {
+        return await repo.getUserProfile();
+    };
 
     return {
-        getUserProfile
-    }
-}
+        getUserProfile,
+    };
+};
