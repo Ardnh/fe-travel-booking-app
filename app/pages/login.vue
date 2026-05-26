@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, AuthFormField } from "@nuxt/ui";
 import { useAuthStore, useUsersStore } from "~/stores";
-import { authSchema } from "~/utils";
+import { authSchema, mapRolesToRoute } from "~/utils";
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -51,7 +51,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
             const role = userProfile.value.roles[0] ?? "";
             const route = mapRolesToRoute(role);
 
-            navigateTo(route);
+            navigateTo(route.route);
         }
 
         // Jika user hanya memiliki 1 role langsung arahkan ke halaman yang dituju

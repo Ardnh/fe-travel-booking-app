@@ -19,6 +19,15 @@ const links = [
                 activePageName.value = "Dashboard";
             },
         },
+        {
+            label: "Bookings",
+            icon: "i-lucide-house",
+            to: "/app/bookings",
+            onSelect: () => {
+                open.value = false;
+                activePageName.value = "Bookings";
+            },
+        },
     ],
 ] satisfies NavigationMenuItem[][];
 
@@ -83,7 +92,9 @@ onMounted(async () => {
             collapsible
             resizable
             class="bg-elevated/25"
-            :ui="{ footer: 'lg:border-t lg:border-default' }"
+            :ui="{
+                footer: 'lg:border-t lg:border-default',
+            }"
         >
             <template #header="{ collapsed }">
                 <!-- <TeamsMenu :collapsed="collapsed" /> -->
@@ -156,7 +167,11 @@ onMounted(async () => {
             </template>
 
             <template #body>
-                <slot />
+                <Transition name="page" mode="out-in">
+                    <div :key="$route.fullPath">
+                        <slot />
+                    </div>
+                </Transition>
             </template>
         </UDashboardPanel>
     </UDashboardGroup>
