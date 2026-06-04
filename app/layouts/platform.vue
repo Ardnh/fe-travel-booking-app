@@ -2,7 +2,6 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 
-const route = useRoute();
 const toast = useToast();
 
 const open = ref(false);
@@ -40,10 +39,6 @@ const links = [
     ],
 ] satisfies NavigationMenuItem[][];
 
-const showModal = () => {
-    open.value = !open.value;
-};
-
 onMounted(async () => {
     const cookie = useCookie("cookie-consent");
     if (cookie.value === "accepted") {
@@ -74,17 +69,39 @@ onMounted(async () => {
 </script>
 <template>
     <UDashboardGroup unit="rem">
-        <UDashboardSidebar id="default" v-model:open="open" collapsible resizable class="bg-elevated/25" :ui="{ footer: 'lg:border-t lg:border-default' }">
+        <UDashboardSidebar
+            id="default"
+            v-model:open="open"
+            collapsible
+            resizable
+            class="bg-elevated/25"
+            :ui="{ footer: 'lg:border-t lg:border-default' }"
+        >
             <template #header="{ collapsed }">
                 <!-- <TeamsMenu :collapsed="collapsed" /> -->
             </template>
 
             <template #default="{ collapsed }">
-                <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+                <UDashboardSearchButton
+                    :collapsed="collapsed"
+                    class="bg-transparent ring-default"
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[0]" orientation="vertical" tooltip popover />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[0]"
+                    orientation="vertical"
+                    tooltip
+                    popover
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[1]"
+                    orientation="vertical"
+                    tooltip
+                    class="mt-auto"
+                />
             </template>
 
             <template #footer="{ collapsed }">
@@ -104,15 +121,15 @@ onMounted(async () => {
 
         <UDashboardPanel hboardPanel id="home">
             <template #header>
-                <UDashboardNavbar :title="activePageName" :ui="{ right: 'gap-3' }">
+                <UDashboardNavbar
+                    :title="activePageName"
+                    :ui="{ right: 'gap-3' }"
+                >
                     <template #leading>
                         <UDashboardSidebarCollapse />
                     </template>
 
                     <template #right>
-                        <UButton v-if="activePageName !== 'Dashboard'" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()">
-                            New {{ activePageName }}
-                        </UButton>
                         <UColorModeButton />
                     </template>
                 </UDashboardNavbar>
@@ -123,15 +140,4 @@ onMounted(async () => {
             </template>
         </UDashboardPanel>
     </UDashboardGroup>
-
-    <UModal v-model:open="open" title="Modal with footer" :ui="{ footer: 'justify-end' }">
-        <template #body>
-            <div class="">{{ activePageName }}</div>
-        </template>
-
-        <template #footer="{ close }">
-            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-            <UButton label="Submit" color="neutral" />
-        </template>
-    </UModal>
 </template>

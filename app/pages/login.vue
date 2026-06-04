@@ -45,7 +45,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
         }
 
         // Cek jika user memiliki lebih dari 1 role maka arahkan ke select role page
-        if (hasMultiRole(userProfile.value.roles)) {
+        if (hasMultiRole()) {
             navigateTo("/select-role");
         } else {
             const role = userProfile.value.roles[0] ?? "";
@@ -72,7 +72,10 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
     <UMain class="flex items-center justify-center min-h-screen">
         <div class="flex flex-col items-center gap-5 w-full max-w-md px-6 py-8">
             <!-- Back link -->
-            <NuxtLink to="/" class="group flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-cyan-400 transition-colors">
+            <NuxtLink
+                to="/"
+                class="group flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-cyan-400 transition-colors"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -81,7 +84,11 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
                     stroke="currentColor"
                     class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                    />
                 </svg>
                 Back to Home
             </NuxtLink>
