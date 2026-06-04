@@ -13,8 +13,8 @@ const routeMap: Record<string, PageInfo> = {
         name: "Business Owner",
     },
     platform_owner: {
-        route: "/superadmin",
-        name: "Super Admin",
+        route: "/platform",
+        name: "Platform",
     },
     admin_business: {
         route: "/admin-owner",

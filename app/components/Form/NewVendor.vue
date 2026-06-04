@@ -12,10 +12,7 @@ const schema = z.object({
     business_name: z.string().min(3, "Minimal 3 karakter"),
     owner_name: z.string().min(3, "Minimal 3 karakter"),
     description: z.string().min(10, "Minimal 10 karakter"),
-    founded_year: z
-        .number({ invalid_type_error: "Harus berupa angka" })
-        .min(1900, "Tahun tidak valid")
-        .max(new Date().getFullYear(), "Tahun tidak boleh lebih dari sekarang"),
+    founded_year: z.number("Harus berupa angka").min(1900, "Tahun tidak valid").max(new Date().getFullYear(), "Tahun tidak boleh lebih dari sekarang"),
     phone_number: z
         .string()
         .min(10, "Minimal 10 digit")
@@ -72,156 +69,65 @@ watch(open, (val) => {
         description="Isi data vendor untuk mendaftarkan bisnis baru"
         :ui="{
             footer: 'justify-end',
-            width: 'sm:max-w-2xl',
+            body: 'sm:max-w-2xl',
         }"
     >
         <template #body>
-            <UForm
-                :schema="schema"
-                :state="state"
-                class="space-y-4"
-                @submit="onSubmit"
-                id="vendor-form"
-            >
+            <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit" id="vendor-form">
                 <!-- Business Info -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <UFormField
-                        label="Nama Bisnis"
-                        name="business_name"
-                        required
-                    >
-                        <UInput
-                            v-model="state.business_name"
-                            placeholder="Bali Adventure Tours"
-                            icon="i-lucide-building-2"
-                            class="w-full"
-                        />
+                    <UFormField label="Nama Bisnis" name="business_name" required>
+                        <UInput v-model="state.business_name" placeholder="Bali Adventure Tours" icon="i-lucide-building-2" class="w-full" />
                     </UFormField>
 
                     <UFormField label="Nama Pemilik" name="owner_name" required>
-                        <UInput
-                            v-model="state.owner_name"
-                            placeholder="Muhammad Ardan"
-                            icon="i-lucide-user"
-                            class="w-full"
-                        />
+                        <UInput v-model="state.owner_name" placeholder="Muhammad Ardan" icon="i-lucide-user" class="w-full" />
                     </UFormField>
                 </div>
 
                 <UFormField label="Deskripsi" name="description" required>
-                    <UTextarea
-                        v-model="state.description"
-                        placeholder="Penyedia jasa travel dan tour terpercaya..."
-                        :rows="3"
-                        class="w-full"
-                    />
+                    <UTextarea v-model="state.description" placeholder="Penyedia jasa travel dan tour terpercaya..." :rows="3" class="w-full" />
                 </UFormField>
 
                 <!-- Contact Info -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <UFormField
-                        label="Tahun Berdiri"
-                        name="founded_year"
-                        required
-                    >
-                        <UInput
-                            v-model.number="state.founded_year"
-                            type="number"
-                            placeholder="2020"
-                            icon="i-lucide-calendar"
-                            class="w-full"
-                        />
+                    <UFormField label="Tahun Berdiri" name="founded_year" required>
+                        <UInput v-model.number="state.founded_year" type="number" placeholder="2020" icon="i-lucide-calendar" class="w-full" />
                     </UFormField>
 
-                    <UFormField
-                        label="No. Telepon"
-                        name="phone_number"
-                        required
-                    >
-                        <UInput
-                            v-model="state.phone_number"
-                            placeholder="+6281234567890"
-                            icon="i-lucide-phone"
-                            class="w-full"
-                        />
+                    <UFormField label="No. Telepon" name="phone_number" required>
+                        <UInput v-model="state.phone_number" placeholder="+6281234567890" icon="i-lucide-phone" class="w-full" />
                     </UFormField>
 
                     <UFormField label="Email" name="email" required>
-                        <UInput
-                            v-model="state.email"
-                            type="email"
-                            placeholder="info@vendor.com"
-                            icon="i-lucide-mail"
-                            class="w-full"
-                        />
+                        <UInput v-model="state.email" type="email" placeholder="info@vendor.com" icon="i-lucide-mail" class="w-full" />
                     </UFormField>
                 </div>
 
-                <UFormField
-                    label="Alamat Kantor Pusat"
-                    name="head_office_address"
-                    required
-                >
-                    <UTextarea
-                        v-model="state.head_office_address"
-                        placeholder="Jl. Sunset Road No. 88, Kuta, Bali"
-                        :rows="2"
-                        class="w-full"
-                    />
+                <UFormField label="Alamat Kantor Pusat" name="head_office_address" required>
+                    <UTextarea v-model="state.head_office_address" placeholder="Jl. Sunset Road No. 88, Kuta, Bali" :rows="2" class="w-full" />
                 </UFormField>
 
                 <!-- Media URLs -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <UFormField label="Logo URL" name="logo_url">
-                        <UInput
-                            v-model="state.logo_url"
-                            placeholder="https://example.com/logo.png"
-                            icon="i-lucide-image"
-                            class="w-full"
-                        />
+                        <UInput v-model="state.logo_url" placeholder="https://example.com/logo.png" icon="i-lucide-image" class="w-full" />
                     </UFormField>
 
                     <UFormField label="Banner URL" name="banner_url">
-                        <UInput
-                            v-model="state.banner_url"
-                            placeholder="https://example.com/banner.jpg"
-                            icon="i-lucide-panorama"
-                            class="w-full"
-                        />
+                        <UInput v-model="state.banner_url" placeholder="https://example.com/banner.jpg" icon="i-lucide-panorama" class="w-full" />
                     </UFormField>
                 </div>
 
-                <UFormField
-                    label="Nomor Dokumen Legal (NIB)"
-                    name="legal_document_number"
-                    required
-                >
-                    <UInput
-                        v-model="state.legal_document_number"
-                        placeholder="NIB-1234567890"
-                        icon="i-lucide-file-text"
-                        class="w-full"
-                    />
+                <UFormField label="Nomor Dokumen Legal (NIB)" name="legal_document_number" required>
+                    <UInput v-model="state.legal_document_number" placeholder="NIB-1234567890" icon="i-lucide-file-text" class="w-full" />
                 </UFormField>
             </UForm>
         </template>
 
         <template #footer="{ close }">
-            <UButton
-                label="Batal"
-                color="neutral"
-                variant="outline"
-                :disabled="loading"
-                @click="close"
-            />
-            <UButton
-                label="Simpan Vendor"
-                color="primary"
-                icon="i-lucide-save"
-                type="submit"
-                form="vendor-form"
-                :loading="loading"
-            />
+            <UButton label="Batal" color="neutral" variant="outline" :disabled="loading" @click="close" />
+            <UButton label="Simpan Vendor" color="primary" icon="i-lucide-save" type="submit" form="vendor-form" :loading="loading" />
         </template>
     </UModal>
 </template>

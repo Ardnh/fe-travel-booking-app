@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-    layout: "superadmin",
+    layout: "platform",
 });
 </script>
 
 <template>
-    <div>super admin dashboard</div>
+    <div>super admin service types</div>
 </template>

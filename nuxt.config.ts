@@ -14,10 +14,10 @@ export default defineNuxtConfig({
             name: "page",
             mode: "out-in",
         },
-        layoutTransition: {
-            name: "layout",
-            mode: "out-in",
-        },
+        // layoutTransition: {
+        //     name: "layout",
+        //     mode: "out-in",
+        // },
     },
     runtimeConfig: {
         apiSecret: "123",
@@ -25,5 +25,13 @@ export default defineNuxtConfig({
         public: {
             apiBase: "http://127.0.0.1:8080/api/v1",
         },
+    },
+    routeRules: {
+        "/app/**": { ssr: false },
+        "/admin-owner/**": { ssr: false },
+        "/admin-pool/**": { ssr: false },
+        "/vendor/**": { ssr: false },
+        "/superadmin/**": { ssr: false },
+        "/select-role": { ssr: false },
     },
 });

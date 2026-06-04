@@ -1,4 +1,5 @@
 import { storage } from "~/utils";
+
 export const useApi = () => {
     const config = useRuntimeConfig();
 
@@ -6,7 +7,6 @@ export const useApi = () => {
         baseURL: config.public.apiBase,
         onRequest({ options }) {
             const token = storage.getString("token");
-
             if (token) {
                 options.headers.set("Authorization", `Bearer ${token}`);
             }

@@ -13,35 +13,32 @@ const links = [
         {
             label: "Dashboard",
             icon: "i-lucide-house",
-            to: "/superadmin",
+            to: "/platform",
             onSelect: () => {
                 open.value = false;
                 activePageName.value = "Dashboard";
             },
         },
+        {
+            label: "Layouts",
+            icon: "i-lucide-house",
+            to: "/platform/layouts",
+            onSelect: () => {
+                open.value = false;
+                activePageName.value = "Layouts";
+            },
+        },
+        {
+            label: "Service Types",
+            icon: "i-lucide-house",
+            to: "/platform/service-types",
+            onSelect: () => {
+                open.value = false;
+                activePageName.value = "Service Types";
+            },
+        },
     ],
 ] satisfies NavigationMenuItem[][];
-
-const groups = computed(() => [
-    {
-        id: "links",
-        label: "Go to",
-        items: links.flat(),
-    },
-    {
-        id: "code",
-        label: "Code",
-        items: [
-            {
-                id: "source",
-                label: "View page source",
-                icon: "i-simple-icons-github",
-                to: `https://github.com/nuxt-ui-templates/dashboard/blob/main/app/pages${route.path === "/" ? "/index" : route.path}.vue`,
-                target: "_blank",
-            },
-        ],
-    },
-]);
 
 const showModal = () => {
     open.value = !open.value;
@@ -77,39 +74,17 @@ onMounted(async () => {
 </script>
 <template>
     <UDashboardGroup unit="rem">
-        <UDashboardSidebar
-            id="default"
-            v-model:open="open"
-            collapsible
-            resizable
-            class="bg-elevated/25"
-            :ui="{ footer: 'lg:border-t lg:border-default' }"
-        >
+        <UDashboardSidebar id="default" v-model:open="open" collapsible resizable class="bg-elevated/25" :ui="{ footer: 'lg:border-t lg:border-default' }">
             <template #header="{ collapsed }">
                 <!-- <TeamsMenu :collapsed="collapsed" /> -->
             </template>
 
             <template #default="{ collapsed }">
-                <UDashboardSearchButton
-                    :collapsed="collapsed"
-                    class="bg-transparent ring-default"
-                />
+                <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
 
-                <UNavigationMenu
-                    :collapsed="collapsed"
-                    :items="links[0]"
-                    orientation="vertical"
-                    tooltip
-                    popover
-                />
+                <UNavigationMenu :collapsed="collapsed" :items="links[0]" orientation="vertical" tooltip popover />
 
-                <UNavigationMenu
-                    :collapsed="collapsed"
-                    :items="links[1]"
-                    orientation="vertical"
-                    tooltip
-                    class="mt-auto"
-                />
+                <UNavigationMenu :collapsed="collapsed" :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
             </template>
 
             <template #footer="{ collapsed }">
@@ -119,35 +94,23 @@ onMounted(async () => {
                         loading: 'lazy' as const,
                     }"
                     :label="collapsed ? undefined : 'Benjamin'"
+                    :block="collapsed"
                     color="neutral"
                     variant="ghost"
                     class="w-full"
-                    :block="collapsed"
                 />
             </template>
         </UDashboardSidebar>
 
-        <UDashboardSearch :groups="groups" />
-
         <UDashboardPanel hboardPanel id="home">
             <template #header>
-                <UDashboardNavbar
-                    :title="activePageName"
-                    :ui="{ right: 'gap-3' }"
-                >
+                <UDashboardNavbar :title="activePageName" :ui="{ right: 'gap-3' }">
                     <template #leading>
                         <UDashboardSidebarCollapse />
                     </template>
 
                     <template #right>
-                        <UButton
-                            v-if="activePageName !== 'Dashboard'"
-                            icon="i-lucide-plus"
-                            size="md"
-                            color="primary"
-                            variant="solid"
-                            @click="showModal()"
-                        >
+                        <UButton v-if="activePageName !== 'Dashboard'" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()">
                             New {{ activePageName }}
                         </UButton>
                         <UColorModeButton />
@@ -161,22 +124,13 @@ onMounted(async () => {
         </UDashboardPanel>
     </UDashboardGroup>
 
-    <UModal
-        v-model:open="open"
-        title="Modal with footer"
-        :ui="{ footer: 'justify-end' }"
-    >
+    <UModal v-model:open="open" title="Modal with footer" :ui="{ footer: 'justify-end' }">
         <template #body>
             <div class="">{{ activePageName }}</div>
         </template>
 
         <template #footer="{ close }">
-            <UButton
-                label="Cancel"
-                color="neutral"
-                variant="outline"
-                @click="close"
-            />
+            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
             <UButton label="Submit" color="neutral" />
         </template>
     </UModal>

@@ -19,19 +19,16 @@ export const useVendorStore = defineStore("vendor", () => {
         vendors.value = result.data;
     };
 
-    const getVendorById = async (vendorId: string) => {
-        // ❌ missing async
-        const result = await run("getVendorById", () => service.getVendorById(vendorId));
+    const getVendorByOwnerUserId = async () => {
+        const result = await run("getVendorById", () => service.getVendorByOwnerUserId());
         vendor.value = result.data;
     };
 
     const createVendor = async (req: CreateVendorDTO) => {
-        // ❌ missing async
         await run("createVendor", () => service.createVendor(req));
     };
 
     const updateVendor = async (vendorId: string, req: UpdateVendorDTO) => {
-        // ❌ missing async
         await run("updateVendor", () => service.updateVendor(vendorId, req));
     };
 
@@ -46,7 +43,7 @@ export const useVendorStore = defineStore("vendor", () => {
         vendors,
         vendor,
         getAllVendor,
-        getVendorById,
+        getVendorByOwnerUserId,
         createVendor,
         updateVendor,
         deleteVendor,

@@ -8,8 +8,8 @@ export const useVendorService = () => {
         return repo.getAllVendor(page, limit);
     };
 
-    const getVendorById = (vendorId: string) => {
-        return repo.getVendorById(vendorId);
+    const getVendorByOwnerUserId = () => {
+        return repo.getVendorByOwnerUserId();
     };
 
     const createVendor = (req: CreateVendorDTO) => {
@@ -26,7 +26,7 @@ export const useVendorService = () => {
 
     return {
         getAllVendor,
-        getVendorById,
+        getVendorByOwnerUserId,
         createVendor,
         updateVendor,
         deleteVendor,

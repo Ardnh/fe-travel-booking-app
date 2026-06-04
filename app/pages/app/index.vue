@@ -1,30 +1,49 @@
 <script setup lang="ts">
-import { useUsersStore } from "~/stores";
+import { useUsersStore, useVendorStore } from "~/stores";
 
 const userStore = useUsersStore();
-const { userProfile } = storeToRefs(userStore);
-const { getUserProfile } = userStore;
+const vendorStore = useVendorStore();
+const toast = useToast();
 
-const loading = ref(true);
+const { userProfile } = storeToRefs(userStore);
+const {} = storeToRefs(vendorStore);
+const { hasMultiRole, hasRole } = usePermissions();
+
+const { getUserProfile } = userStore;
+const { createVendor } = vendorStore;
+
 const open = ref(false);
 
 const handleSubmit = async (data: any) => {
-    // panggil API create vendor
-    // data sudah tervalidasi, tinggal tambahkan owner_user_id
-    // await vendorRepository.create({
-    //     ...data,
-    //     owner_user_id: userProfile.value.user_id,
-    // });
-    console.log("data", data);
+    try {
+        if (!userProfile.value) {
+            throw new Error("User profile not provided");
+        }
+
+        await createVendor({
+            ...data,
+            owner_user_id: userProfile.value.user_id,
+        });
+    } catch (e) {
+        toast.add({
+            title: `${e}`,
+            duration: 0,
+            close: false,
+        });
+    }
+};
+
+const createOrGoToVendor = () => {
+    if (userHasVendor) {
+        navigateTo("/vendor");
+    } else {
+        open.value = true;
+    }
 };
 
 onMounted(async () => {
-    if (userProfile.value) {
-        loading.value = false;
-        return;
-    }
+    if (userProfile.value) return;
     await getUserProfile();
-    loading.value = false;
 });
 
 onUnmounted(() => {
@@ -33,6 +52,10 @@ onUnmounted(() => {
 
 definePageMeta({
     layout: "app",
+});
+
+const userHasVendor = computed(() => {
+    return hasMultiRole() && hasRole("business_owner");
 });
 
 const greeting = computed(() => {
@@ -102,10 +125,7 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
     "schedules:read": { label: "Lihat Jadwal", icon: "i-lucide-calendar" },
     "pool-points:read": { label: "Lihat Pool", icon: "i-lucide-map-pin" },
     "layouts:read": { label: "Lihat Layout", icon: "i-lucide-layout-grid" },
-    "layout-positions:read": {
-        label: "Lihat Posisi",
-        icon: "i-lucide-grid-3x3",
-    },
+    "layout-positions:read": { label: "Lihat Posisi", icon: "i-lucide-grid-3x3" },
     "bookings:create": { label: "Buat Booking", icon: "i-lucide-ticket-plus" },
     "bookings:read": { label: "Lihat Booking", icon: "i-lucide-ticket" },
 };
@@ -114,7 +134,7 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
 <template>
     <div class="flex flex-col gap-6 p-4 md:p-6">
         <!-- Greeting & Profile Card -->
-        <UCard v-if="!loading && userProfile" variant="subtle">
+        <UCard v-if="userProfile" variant="subtle">
             <div class="flex flex-col md:flex-row md:items-center gap-4">
                 <UAvatar
                     :src="userProfile.avatar_url || undefined"
@@ -134,46 +154,26 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
                         {{ userProfile.email }}
                     </p>
                     <div class="flex flex-wrap items-center gap-2 mt-2">
-                        <UBadge
-                            v-for="role in userProfile.roles"
-                            :key="role"
-                            color="primary"
-                            variant="subtle"
-                            size="sm"
-                            icon="i-lucide-shield"
-                        >
+                        <UBadge v-for="role in userProfile.roles" :key="role" color="primary" variant="subtle" size="sm" icon="i-lucide-shield">
                             {{ role.replace("_", " ") }}
                         </UBadge>
-                        <UBadge
-                            :color="userProfile.is_active ? 'success' : 'error'"
-                            variant="subtle"
-                            size="sm"
-                        >
+                        <UBadge :color="userProfile.is_active ? 'success' : 'error'" variant="subtle" size="sm">
                             {{ userProfile.is_active ? "Aktif" : "Nonaktif" }}
                         </UBadge>
                     </div>
                 </div>
                 <div class="hidden md:flex flex-col items-end gap-1 text-right">
-                    <UButton icon="i-lucide-building-2" @click="open = true"
-                        >Open Vendor</UButton
-                    >
-                    <UBadge
-                        color="neutral"
-                        variant="outline"
-                        size="sm"
-                        icon="i-lucide-phone"
-                    >
+                    <UButton icon="i-lucide-building-2" @click="createOrGoToVendor">{{ userHasVendor ? "Go to Vendor" : "Open Vendor" }}</UButton>
+                    <UBadge color="neutral" variant="outline" size="sm" icon="i-lucide-phone">
                         {{ userProfile.phone }}
                     </UBadge>
-                    <p class="text-xs text-muted">
-                        Bergabung {{ memberSince }}
-                    </p>
+                    <p class="text-xs text-muted">Bergabung {{ memberSince }}</p>
                 </div>
             </div>
         </UCard>
 
         <!-- Loading State -->
-        <UCard v-else-if="loading" variant="subtle">
+        <UCard v-else variant="subtle">
             <div class="flex items-center gap-4">
                 <USkeleton class="size-16 rounded-full" />
                 <div class="flex-1 space-y-2">
@@ -186,9 +186,7 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
 
         <!-- Quick Actions -->
         <div>
-            <h2 class="text-lg font-semibold text-highlighted mb-3">
-                Aksi Cepat
-            </h2>
+            <h2 class="text-lg font-semibold text-highlighted mb-3">Aksi Cepat</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <UCard
                     v-for="action in quickActions"
@@ -199,10 +197,7 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
                 >
                     <div class="flex items-start gap-3">
                         <div class="rounded-lg bg-primary/10 p-2">
-                            <UIcon
-                                :name="action.icon"
-                                class="size-5 text-primary"
-                            />
+                            <UIcon :name="action.icon" class="size-5 text-primary" />
                         </div>
                         <div>
                             <p class="font-medium text-sm text-highlighted">
@@ -222,14 +217,7 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
             <!-- Permissions -->
             <UCard title="Akses Anda" variant="outline">
                 <div class="flex flex-wrap gap-1.5">
-                    <UBadge
-                        v-for="perm in userProfile?.permissions"
-                        :key="perm"
-                        color="neutral"
-                        variant="subtle"
-                        size="xs"
-                        :icon="permissionLabels[perm]?.icon || 'i-lucide-key'"
-                    >
+                    <UBadge v-for="perm in userProfile?.permissions" :key="perm" color="neutral" variant="subtle" size="xs" :icon="permissionLabels[perm]?.icon || 'i-lucide-key'">
                         {{ permissionLabels[perm]?.label || perm }}
                     </UBadge>
                 </div>
@@ -240,36 +228,24 @@ const permissionLabels: Record<string, { label: string; icon: string }> = {
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted">Email</span>
-                        <span class="text-sm font-medium text-highlighted">{{
-                            userProfile?.email
-                        }}</span>
+                        <span class="text-sm font-medium text-highlighted">{{ userProfile?.email }}</span>
                     </div>
                     <USeparator />
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted">Telepon</span>
-                        <span class="text-sm font-medium text-highlighted">{{
-                            userProfile?.phone
-                        }}</span>
+                        <span class="text-sm font-medium text-highlighted">{{ userProfile?.phone }}</span>
                     </div>
                     <USeparator />
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted">Status</span>
-                        <UBadge
-                            :color="
-                                userProfile?.is_active ? 'success' : 'error'
-                            "
-                            variant="subtle"
-                            size="xs"
-                        >
+                        <UBadge :color="userProfile?.is_active ? 'success' : 'error'" variant="subtle" size="xs">
                             {{ userProfile?.is_active ? "Aktif" : "Nonaktif" }}
                         </UBadge>
                     </div>
                     <USeparator />
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted">Bergabung</span>
-                        <span class="text-sm font-medium text-highlighted">{{
-                            memberSince
-                        }}</span>
+                        <span class="text-sm font-medium text-highlighted">{{ memberSince }}</span>
                     </div>
                 </div>
             </UCard>

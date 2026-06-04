@@ -6,7 +6,7 @@ export const useVendorRepository = () => {
     return {
         createVendor: (req: CreateVendorDTO) => api<BaseResponse>("/vendors", { method: "POST", body: req }),
         getAllVendor: (page: number, limit: number) => api<VendorListResponse>("/vendors", { query: { page, limit } }),
-        getVendorById: (vendorId: string) => api<VendorResponse>(`/vendors/${vendorId}`),
+        getVendorByOwnerUserId: () => api<VendorResponse>(`/vendors/owner`),
         updateVendor: (vendorId: string, req: UpdateVendorDTO) => api<UpdateVendorDTO>(`/vendors/${vendorId}`, { method: "PUT", body: req }),
         deleteVendor: (vendorId: string) => api<BaseResponse>(`/vendors/${vendorId}`, { method: "DELETE" }),
     };

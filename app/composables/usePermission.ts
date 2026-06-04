@@ -8,16 +8,12 @@ export const usePermissions = () => {
 
     // cek salah satu permission terpenuhi (OR)
     const canAny = (permissions: string[]): boolean => {
-        return permissions.some((p) =>
-            auth.userProfile?.permissions.includes(p),
-        );
+        return permissions.some((p) => auth.userProfile?.permissions.includes(p));
     };
 
     // cek semua permission harus terpenuhi (AND)
     const canAll = (permissions: string[]): boolean => {
-        return permissions.every((p) =>
-            auth.userProfile?.permissions.includes(p),
-        );
+        return permissions.every((p) => auth.userProfile?.permissions.includes(p));
     };
 
     // cek role
@@ -31,8 +27,8 @@ export const usePermissions = () => {
     };
 
     // cek jumlah role yang dimiliki user
-    const hasMultiRole = (roles: string[]) => {
-        return roles.length > 1;
+    const hasMultiRole = () => {
+        return (auth.userProfile?.roles ?? []).length > 1;
     };
 
     return { can, canAny, canAll, hasRole, isActiveRole, hasMultiRole };

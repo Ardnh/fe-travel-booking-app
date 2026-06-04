@@ -8,6 +8,9 @@ export const useAuthStore = defineStore("auth", () => {
     const { isLoading, getError, run } = useAsync();
     const service = useAuthService();
 
+    // const tokenCookie = useCookie("token", { maxAge: 60 * 60 * 24 * 7 });
+    // const expireCookie = useCookie("expire_date", { maxAge: 60 * 60 * 24 * 7 });
+
     // ------------ API STATE ------------
     const loginData = ref<LoginResponse | null>(null);
 
@@ -15,12 +18,12 @@ export const useAuthStore = defineStore("auth", () => {
 
     // ------------ ACTIONS ------------
     const login = async (req: LoginRequestDTO) => {
-        const result = await run<LoginResponse>("login", () =>
-            service.login(req),
-        );
+        const result = await run<LoginResponse>("login", () => service.login(req));
 
         storage.setString("token", result.data.token);
         storage.setString("expire_date", result.data.expire_date);
+        // tokenCookie.value = result.data.token;
+        // expireCookie.value = result.data.expire_date;
     };
 
     const register = () => {};
