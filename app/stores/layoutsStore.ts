@@ -40,7 +40,11 @@ export const useLayoutsStore = defineStore("layouts", () => {
             service.updateLayout(id, data),
         );
         if (result.success) {
-            layout.value = result.data;
+            const updatedLayout = result.data;
+            const index = layouts.value.findIndex((l) => l.layout_id === id);
+            if (index !== -1) {
+                layouts.value[index] = updatedLayout;
+            }
         }
     };
 

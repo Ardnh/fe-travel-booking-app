@@ -36,6 +36,15 @@ const links = [
                 activePageName.value = "Service Types";
             },
         },
+        {
+            label: "Layout Editor",
+            icon: "i-lucide-house",
+            to: "/platform/layout-editor",
+            onSelect: () => {
+                open.value = false;
+                activePageName.value = "Service Types";
+            },
+        },
     ],
 ] satisfies NavigationMenuItem[][];
 

@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: ["@nuxt/ui", "@pinia/nuxt"],
     css: ["~/assets/css/main.css"],
+    build: { transpile: ["konva"] },
     vite: {
         optimizeDeps: {
             include: ["@vue/devtools-core", "@vue/devtools-kit", "zod"],
@@ -14,10 +15,6 @@ export default defineNuxtConfig({
             name: "page",
             mode: "out-in",
         },
-        // layoutTransition: {
-        //     name: "layout",
-        //     mode: "out-in",
-        // },
     },
     runtimeConfig: {
         apiSecret: "123",

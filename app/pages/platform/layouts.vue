@@ -34,7 +34,8 @@ const query = ref({
 });
 
 const open = ref(false);
-const editLayout = ref<LayoutForm | undefined>(undefined);
+const deleteOpen = ref(false);
+const editLayout = ref<Layouts | undefined>(undefined);
 const UButton = resolveComponent("UButton");
 
 const columns: TableColumn<Layouts>[] = [
@@ -64,8 +65,9 @@ const columns: TableColumn<Layouts>[] = [
                     variant: "soft",
                     size: "sm",
                     "aria-label": "Delete",
-                    onClick: async () => {
-                        await handleDelete(row.original.layout_id);
+                    onClick: () => {
+                        editLayout.value = row.original;
+                        deleteOpen.value = true;
                     },
                 }),
             ]),
@@ -76,8 +78,8 @@ const showModal = () => {
     open.value = true;
 };
 
-const handleSubmit = async (mode: string, data: LayoutForm) => {
-    if (mode === "update") {
+const handleSubmit = async (data: LayoutForm) => {
+    if (editLayout.value) {
         await handleUpdate(data);
     } else {
         await handleCreate(data);
@@ -110,12 +112,16 @@ const handleCreate = async (data: LayoutForm) => {
 
 const handleUpdate = async (data: LayoutForm) => {
     try {
+        if (!editLayout.value) return;
+
+        const id = editLayout.value.layout_id;
         const updateData: UpdateLayoutDto = {
-            layout_id: editLayout.value!.layout_id!,
+            layout_id: id,
             ...data,
         };
 
-        await updateLayout(editLayout.value!.layout_id!, updateData);
+        await updateLayout(id, updateData);
+        editLayout.value = undefined;
     } catch {
         const error = getError("updateLayout");
         if (error) {
@@ -128,9 +134,13 @@ const handleUpdate = async (data: LayoutForm) => {
     }
 };
 
-const handleDelete = async (layout_id: string) => {
+const handleDelete = async () => {
     try {
-        await deleteLayout(layout_id);
+        if (!editLayout.value) return;
+
+        const id = editLayout.value.layout_id;
+        await deleteLayout(id);
+        editLayout.value = undefined;
     } catch {
         const error = getError("deleteLayout");
         if (error) {
@@ -155,6 +165,14 @@ onMounted(async () => {
 <template>
     <div class="w-full flex justify-end items-center">
         <UButton
+            label="Layout Editor"
+            icon="i-lucide-plus"
+            size="md"
+            color="primary"
+            variant="solid"
+            @click="showModal()"
+        />
+        <UButton
             label="New Layouts"
             icon="i-lucide-plus"
             size="md"
@@ -172,7 +190,9 @@ onMounted(async () => {
 
     <FormNewLayouts
         v-model:open="open"
-        @submit="(mode: string, data: LayoutForm) => handleSubmit(mode, data)"
+        @submit="(data: LayoutForm) => handleSubmit(data)"
         :data="editLayout"
     />
+
+    <FormDeleteConfirmation v-model:open="deleteOpen" @delete="handleDelete" />
 </template>
