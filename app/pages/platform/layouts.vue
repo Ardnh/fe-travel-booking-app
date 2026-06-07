@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { getLayoutsColumns } from "~/constants";
 import type { TableColumn } from "@nuxt/ui";
-import type {
-    LayoutForm,
-    Layouts,
-    UpdateLayoutDto,
-    CreateLayoutDto,
-} from "~/models";
+import type { LayoutForm, Layouts, UpdateLayoutDto, CreateLayoutDto } from "~/models";
 
 const toast = useToast();
 const layoutsStore = useLayoutsStore();
@@ -15,14 +10,7 @@ const usersStore = useUsersStore();
 const { layouts } = storeToRefs(layoutsStore);
 const { userProfile } = storeToRefs(usersStore);
 
-const {
-    getAllLayouts,
-    createLayout,
-    deleteLayout,
-    updateLayout,
-    isLoading,
-    getError,
-} = layoutsStore;
+const { getAllLayouts, createLayout, deleteLayout, updateLayout, isLoading, getError } = layoutsStore;
 const { getUserProfile } = usersStore;
 
 const query = ref({
@@ -95,6 +83,7 @@ const handleCreate = async (data: LayoutForm) => {
             grid_size_y: data.grid_size_y ?? 0,
             seat_count: data.seat_count ?? 0,
             created_by: userProfile.value?.user_id ?? "",
+            layout_config: data.layout_config,
         };
 
         await createLayout(createData);
@@ -163,36 +152,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="w-full flex justify-end items-center">
-        <UButton
-            label="Layout Editor"
-            icon="i-lucide-plus"
-            size="md"
-            color="primary"
-            variant="solid"
-            @click="showModal()"
-        />
-        <UButton
-            label="New Layouts"
-            icon="i-lucide-plus"
-            size="md"
-            color="primary"
-            variant="solid"
-            @click="showModal()"
-        />
+    <div class="w-full flex justify-end items-center gap-4">
+        <UButton label="Layout Editor" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()" />
+        <UButton label="New Layouts" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()" />
     </div>
 
-    <UTable
-        :data="layouts"
-        :columns="columns"
-        class="flex-1 border border-gray-300 rounded-lg"
-    />
+    <UTable :data="layouts" :columns="columns" class="flex-1 border border-gray-300 rounded-lg" />
 
-    <FormNewLayouts
-        v-model:open="open"
-        @submit="(data: LayoutForm) => handleSubmit(data)"
-        :data="editLayout"
-    />
-
+    <FormNewLayouts v-model:open="open" @submit="(data: LayoutForm) => handleSubmit(data)" :data="editLayout" />
     <FormDeleteConfirmation v-model:open="deleteOpen" @delete="handleDelete" />
 </template>
