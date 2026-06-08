@@ -28,7 +28,7 @@ export default defineNuxtConfig({
         "/admin-owner/**": { ssr: false },
         "/admin-pool/**": { ssr: false },
         "/vendor/**": { ssr: false },
-        "/superadmin/**": { ssr: false },
+        "/platform/**": { ssr: false },
         "/select-role": { ssr: false },
     },
 });
