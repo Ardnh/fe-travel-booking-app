@@ -25,13 +25,7 @@ const schema = z.object({
     description: z.string().optional(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-    embed_url: z
-        .string()
-        .refine(
-            (v) =>
-                v === "" || /^https:\/\/www\.google\.com\/maps\/embed/.test(v),
-            "Embed Google Maps tidak valid",
-        ),
+    embed_url: z.string().refine((v) => v === "" || /^https:\/\/www\.google\.com\/maps\/embed/.test(v), "Embed Google Maps tidak valid"),
 });
 
 const initialState: PoolForm = {
@@ -74,15 +68,9 @@ const selectedDistrictId = ref<string>("");
 
 let hydrating = false;
 
-const provinceItems = computed(() =>
-    provinces.value.map((p) => ({ label: p.name, value: p.code })),
-);
-const regencyItems = computed(() =>
-    regencies.value.map((r) => ({ label: r.name, value: r.code })),
-);
-const districtItems = computed(() =>
-    districts.value.map((d) => ({ label: d.name, value: d.code })),
-);
+const provinceItems = computed(() => provinces.value.map((p) => ({ label: p.name, value: p.code })));
+const regencyItems = computed(() => regencies.value.map((r) => ({ label: r.name, value: r.code })));
+const districtItems = computed(() => districts.value.map((d) => ({ label: d.name, value: d.code })));
 
 watch(selectedProvinceId, async (id) => {
     const prov = provinces.value.find((p) => String(p.code) === String(id));
@@ -110,7 +98,7 @@ watch(selectedDistrictId, (id) => {
     state.district = dist?.name ?? "";
 });
 
-async function hydrateRegencyArea(provName: string, cityName: string) {
+async function hydrateArea(provName: string, cityName: string, districtName: string) {
     hydrating = true;
     try {
         if (!provinces.value.length) await getProvince();
@@ -119,7 +107,12 @@ async function hydrateRegencyArea(provName: string, cityName: string) {
             selectedProvinceId.value = prov.code;
             await getRegencies(prov.code);
             const reg = regencies.value.find((r) => r.name === cityName);
-            if (reg) selectedRegencyId.value = reg.code;
+            if (reg) {
+                selectedRegencyId.value = reg.code;
+                await getDistricts(reg.code);
+                const dist = districts.value.find((d) => d.name === districtName);
+                if (dist) selectedDistrictId.value = dist.code;
+            }
         }
     } finally {
         hydrating = false;
@@ -163,8 +156,11 @@ watch(
                 longitude: newData.longitude,
             });
             embedRaw.value = newData.embed_url ?? "";
-            if (newData.province)
-                hydrateRegencyArea(newData.province, newData.city);
+
+            console.log("new state");
+            console.log(state);
+
+            if (newData.province) hydrateArea(newData.province, newData.city, newData.district);
         } else {
             resetForm();
         }
@@ -187,65 +183,29 @@ onMounted(() => {
         fullscreen
         :close="{ onClick: () => close() }"
         :title="props.data ? 'Edit Pool' : 'Tambah Pool'"
-        :description="
-            props.data ? 'Ubah data pool' : 'Isi data untuk membuat pool baru'
-        "
+        :description="props.data ? 'Ubah data pool' : 'Isi data untuk membuat pool baru'"
         :ui="{ footer: 'justify-end' }"
     >
         <template #body>
             <div class="grid grid-cols-3 w-full h-full gap-3">
                 <div class="p-5">
-                    <UForm
-                        :id="props.data ? 'update-pool' : 'create-pool'"
-                        :schema="schema"
-                        :state="state"
-                        class="space-y-4"
-                        @submit="onSubmit"
-                    >
+                    <UForm :id="props.data ? 'update-pool' : 'create-pool'" :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
                         <div class="gap-4">
                             <UFormField label="Nama Pool" name="name" required>
-                                <UInput
-                                    v-model="state.name"
-                                    placeholder="Nama Pool"
-                                    icon="i-lucide-map-pin"
-                                    class="w-full"
-                                />
+                                <UInput v-model="state.name" placeholder="Nama Pool" icon="i-lucide-map-pin" class="w-full" />
                             </UFormField>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <UFormField label="Status" name="status">
-                                <USelect
-                                    v-model="state.status"
-                                    :items="[
-                                        'active',
-                                        'inactive',
-                                        'suspended',
-                                        'pending',
-                                    ]"
-                                    class="w-full"
-                                />
+                                <USelect v-model="state.status" :items="['active', 'inactive', 'suspended', 'pending']" class="w-full" />
                             </UFormField>
-                            <UFormField
-                                label="Provinsi"
-                                name="province"
-                                required
-                            >
-                                <USelectMenu
-                                    v-model="selectedProvinceId"
-                                    value-key="value"
-                                    :items="provinceItems"
-                                    placeholder="Pilih provinsi"
-                                    class="w-full"
-                                />
+                            <UFormField label="Provinsi" name="province" required>
+                                <USelectMenu v-model="selectedProvinceId" value-key="value" :items="provinceItems" placeholder="Pilih provinsi" class="w-full" />
                             </UFormField>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <UFormField
-                                label="Kota/Kabupaten"
-                                name="city"
-                                required
-                            >
+                            <UFormField label="Kota/Kabupaten" name="city" required>
                                 <USelectMenu
                                     v-model="selectedRegencyId"
                                     value-key="value"
@@ -256,11 +216,7 @@ onMounted(() => {
                                 />
                             </UFormField>
 
-                            <UFormField
-                                label="Kecamatan"
-                                name="district"
-                                required
-                            >
+                            <UFormField label="Kecamatan" name="district" required>
                                 <USelectMenu
                                     v-model="selectedDistrictId"
                                     value-key="value"
@@ -273,60 +229,25 @@ onMounted(() => {
                         </div>
 
                         <UFormField label="Alamat" name="address" required>
-                            <UTextarea
-                                v-model="state.address"
-                                placeholder="Alamat lengkap"
-                                :rows="2"
-                                class="w-full"
-                            />
+                            <UTextarea v-model="state.address" placeholder="Alamat lengkap" :rows="2" class="w-full" />
                         </UFormField>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <UFormField
-                                label="Jam Buka"
-                                name="open_time"
-                                required
-                            >
-                                <UInput
-                                    v-model="state.open_time"
-                                    type="time"
-                                    class="w-full"
-                                />
+                            <UFormField label="Jam Buka" name="open_time" required>
+                                <UInput v-model="state.open_time" type="time" class="w-full" />
                             </UFormField>
 
-                            <UFormField
-                                label="Jam Tutup"
-                                name="close_time"
-                                required
-                            >
-                                <UInput
-                                    v-model="state.close_time"
-                                    type="time"
-                                    class="w-full"
-                                />
+                            <UFormField label="Jam Tutup" name="close_time" required>
+                                <UInput v-model="state.close_time" type="time" class="w-full" />
                             </UFormField>
                         </div>
 
                         <UFormField label="Deskripsi" name="description">
-                            <UTextarea
-                                v-model="state.description"
-                                placeholder="Deskripsi pool"
-                                :rows="3"
-                                class="w-full"
-                            />
+                            <UTextarea v-model="state.description" placeholder="Deskripsi pool" :rows="3" class="w-full" />
                         </UFormField>
 
-                        <UFormField
-                            label="Lokasi (Embed Google Maps)"
-                            name="embed_url"
-                            help="Di Google Maps: Share → Embed a map → salin kode, tempel di sini."
-                        >
-                            <UTextarea
-                                v-model="embedRaw"
-                                placeholder="Tempel kode <iframe …> atau URL embed Google Maps"
-                                :rows="3"
-                                class="w-full"
-                            />
+                        <UFormField label="Lokasi (Embed Google Maps)" name="embed_url" help="Di Google Maps: Share → Embed a map → salin kode, tempel di sini.">
+                            <UTextarea v-model="embedRaw" placeholder="Tempel kode <iframe …> atau URL embed Google Maps" :rows="3" class="w-full" />
                         </UFormField>
                     </UForm>
                 </div>
@@ -335,27 +256,15 @@ onMounted(() => {
                     <iframe
                         v-if="state.embed_url"
                         :src="state.embed_url"
-                        style="
-                            border: 0;
-                            width: 100%;
-                            height: 100%;
-                            border-radius: 15px;
-                        "
+                        style="border: 0; width: 100%; height: 100%; border-radius: 15px"
                         allowfullscreen
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                     ></iframe>
-                    <div
-                        v-else
-                        class="flex items-center justify-center w-full h-full rounded-[15px] bg-gray-100 text-gray-400 text-sm"
-                    >
-                        Tempel kode embed Google Maps untuk melihat pratinjau
-                        peta
+                    <div v-else class="flex items-center justify-center w-full h-full rounded-[15px] bg-gray-100 text-gray-400 text-sm">
+                        Tempel kode embed Google Maps untuk melihat pratinjau peta
                     </div>
-                    <p
-                        v-if="state.latitude && state.longitude"
-                        class="text-xs text-gray-500"
-                    >
+                    <p v-if="state.latitude && state.longitude" class="text-xs text-gray-500">
                         Koordinat terdeteksi: {{ state.latitude }},
                         {{ state.longitude }}
                     </p>
@@ -364,18 +273,8 @@ onMounted(() => {
         </template>
 
         <template #footer="{ close }">
-            <UButton
-                label="Batal"
-                color="neutral"
-                variant="outline"
-                @click="close"
-            />
-            <UButton
-                type="submit"
-                label="Save"
-                color="primary"
-                :form="props.data ? 'update-pool' : 'create-pool'"
-            />
+            <UButton label="Batal" color="neutral" variant="outline" @click="close" />
+            <UButton type="submit" label="Save" color="primary" :form="props.data ? 'update-pool' : 'create-pool'" />
         </template>
     </UModal>
 </template>

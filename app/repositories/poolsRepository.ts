@@ -1,12 +1,4 @@
-import type {
-    BaseResponse,
-    CreatePoolDTO,
-    PoolResponse,
-    PoolListResponse,
-    UpdatePoolDTO,
-    CreatePoolResponse,
-    UpdatePoolResponse,
-} from "~/models";
+import type { BaseResponse, CreatePoolDTO, PoolResponse, PoolListResponse, UpdatePoolDTO, CreatePoolResponse, UpdatePoolResponse } from "~/models";
 
 export const usePoolsRepository = () => {
     const { api } = useApi();
@@ -17,17 +9,14 @@ export const usePoolsRepository = () => {
                 method: "POST",
                 body: req,
             }),
-        getAllPool: (page: number, limit: number) =>
-            api<PoolListResponse>("/pool-points", { query: { page, limit } }),
+        getAllPool: (page: number, limit: number) => api<PoolListResponse>("/pool-points", { query: { page, limit } }),
         getPoolByID: (id: string) => api<PoolResponse>(`/pool-points/${id}`),
-        getPoolByVendorID: (vendorId: string) =>
-            api<PoolListResponse>(`/pool-points/vendor/${vendorId}`),
+        getPoolByVendorID: (vendorId: string) => api<PoolListResponse>(`/pool-points/vendors/${vendorId}/pool-points`),
         updatePool: (id: string, req: UpdatePoolDTO) =>
             api<UpdatePoolResponse>(`/pool-points/${id}`, {
                 method: "PUT",
                 body: req,
             }),
-        deletePool: (id: string) =>
-            api<BaseResponse>(`/pool-points/${id}`, { method: "DELETE" }),
+        deletePool: (id: string) => api<BaseResponse>(`/pool-points/${id}`, { method: "DELETE" }),
     };
 };

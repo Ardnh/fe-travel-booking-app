@@ -15,16 +15,16 @@ export const useAreaStore = defineStore("area", () => {
     };
 
     const getRegencies = async (provinceCode: string) => {
-        const result = await run("getRegencies", () =>
-            service.getRegencies(provinceCode),
-        );
+        if (!provinceCode) return;
+
+        const result = await run("getRegencies", () => service.getRegencies(provinceCode));
         regencies.value = result.data ?? [];
     };
 
     const getDistricts = async (regencyCode: string) => {
-        const result = await run("getDistricts", () =>
-            service.getDistricts(regencyCode),
-        );
+        if (!regencyCode) return;
+
+        const result = await run("getDistricts", () => service.getDistricts(regencyCode));
         districts.value = result.data ?? [];
     };
 

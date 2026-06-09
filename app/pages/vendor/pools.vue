@@ -14,15 +14,7 @@ const vendorStore = useVendorStore();
 const { pools } = storeToRefs(poolsStore);
 const { vendor } = storeToRefs(vendorStore);
 
-const {
-    getAllPool,
-    getPoolByVendorID,
-    createPool,
-    updatePool,
-    deletePool,
-    isLoading,
-    getError,
-} = poolsStore;
+const { getAllPool, getPoolByVendorID, createPool, updatePool, deletePool, isLoading, getError } = poolsStore;
 
 const { getVendorByOwnerUserId } = vendorStore;
 
@@ -42,7 +34,19 @@ const UButton = resolveComponent("UButton");
 const columns: TableColumn<Pool>[] = [
     { accessorKey: "name", header: "Name" },
     { accessorKey: "city", header: "City" },
-    { accessorKey: "address", header: "Address" },
+    {
+        accessorKey: "address",
+        header: "Address",
+        cell: ({ row }) =>
+            h(
+                "span",
+                {
+                    class: "block truncate max-w-[200px]",
+                    title: row.original.address,
+                },
+                row.original.address,
+            ),
+    },
     { accessorKey: "open_time", header: "Open Time" },
     { accessorKey: "close_time", header: "Close Time" },
     { accessorKey: "status", header: "Status" },
@@ -165,34 +169,11 @@ watch(
 
 <template>
     <div class="w-full flex justify-end items-center gap-4 mb-3">
-        <UButton
-            label="New Pool"
-            icon="i-lucide-plus"
-            size="md"
-            color="primary"
-            variant="solid"
-            @click="showModal"
-        />
+        <UButton label="New Pool" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal" />
     </div>
 
-    <UTable
-        :data="pools"
-        :columns="columns"
-        class="flex-1 border border-gray-300 rounded-lg"
-        :loading="isLoading('getPoolByVendorID')"
-    />
+    <UTable :data="pools" :columns="columns" class="flex-1 border border-gray-300 rounded-lg" :loading="isLoading('getPoolByVendorID')" />
 
-    <FormNewPool
-        v-model:open="open"
-        @submit="(data: any) => handleSubmit(data)"
-        @close="closeModal"
-        :data="editPool"
-    />
-    <ModalDeleteConfirmation
-        v-model:open="deleteOpen"
-        title="Delete Pool"
-        :itemName="editPool?.name"
-        confirmLabel="Delete"
-        @delete="handleDelete"
-    />
+    <FormNewPool v-model:open="open" @submit="(data: any) => handleSubmit(data)" @close="closeModal" :data="editPool" />
+    <ModalDeleteConfirmation v-model:open="deleteOpen" title="Delete Pool" :itemName="editPool?.name" confirmLabel="Delete" @delete="handleDelete" />
 </template>

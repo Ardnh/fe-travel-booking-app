@@ -16,8 +16,9 @@ export const usePoolsService = () => {
         return repo.getPoolByVendorID(vendorId);
     };
 
-    const createPool = (req: CreatePoolDTO) => {
-        return repo.createPool(req);
+    const createPool = (vendorId: string, req: CreatePoolDTO) => {
+        const slug = req.slug || req.name.toLowerCase().replace(/\s+/g, "-");
+        return repo.createPool({ ...req, slug, vendor_id: vendorId });
     };
 
     const updatePool = (id: string, req: UpdatePoolDTO) => {

@@ -1,18 +1,20 @@
 import type { CreatePoolDTO, Pool, UpdatePoolDTO } from "~/models";
 import { useAsync } from "~/composables";
 import { usePoolsService } from "~/services";
+import { useVendorStore } from "~/stores";
 
 export const usePoolsStore = defineStore("pools", () => {
-    const { isLoading, getError, run } = useAsync();
+    const vendorStore = useVendorStore();
     const service = usePoolsService();
+
+    const { isLoading, getError, run } = useAsync();
+    const { vendor } = storeToRefs(vendorStore);
 
     const pools = ref<Pool[]>([]);
     const pool = ref<Pool | null>(null);
 
     const getAllPool = async (page: number, limit: number) => {
-        const result = await run("getAllPool", () =>
-            service.getAllPool(page, limit),
-        );
+        const result = await run("getAllPool", () => service.getAllPool(page, limit));
 
         if (result.success) {
             pools.value = result.data;
@@ -28,9 +30,7 @@ export const usePoolsStore = defineStore("pools", () => {
     };
 
     const getPoolByVendorID = async (vendorId: string) => {
-        const result = await run("getPoolByVendorID", () =>
-            service.getPoolByVendorID(vendorId),
-        );
+        const result = await run("getPoolByVendorID", () => service.getPoolByVendorID(vendorId));
 
         if (result.success) {
             pools.value = result.data;
@@ -38,20 +38,19 @@ export const usePoolsStore = defineStore("pools", () => {
     };
 
     const createPool = async (req: CreatePoolDTO) => {
-        const result = await run("createPool", () => service.createPool(req));
+        const vendorId = vendor.value?.vendor_id;
+        if (!vendorId) return;
+
+        const result = await run("createPool", () => service.createPool(vendorId, req));
         if (result.success) {
             pools.value = [...pools.value, result.data];
         }
     };
 
     const updatePool = async (id: string, req: UpdatePoolDTO) => {
-        const result = await run("updatePool", () =>
-            service.updatePool(id, req),
-        );
+        const result = await run("updatePool", () => service.updatePool(id, req));
         if (result.success) {
-            pools.value = pools.value.map((item) =>
-                item.pool_id === id ? result.data : item,
-            );
+            pools.value = pools.value.map((item) => (item.pool_id === id ? result.data : item));
         }
     };
 
