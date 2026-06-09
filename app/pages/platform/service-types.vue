@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { ServiceType, ServiceTypeForm, UpdateServiceTypeDTO, CreateServiceTypeDTO } from "~/models";
+import type {
+    ServiceType,
+    ServiceTypeForm,
+    UpdateServiceTypeDTO,
+    CreateServiceTypeDTO,
+} from "~/models";
 import type { TableColumn } from "@nuxt/ui";
 
 definePageMeta({
@@ -14,7 +19,13 @@ const usersStore = useUsersStore();
 const { serviceTypes } = storeToRefs(serviceTypesStore);
 const { userProfile } = storeToRefs(usersStore);
 
-const { getAllServiceType, createServiceType, updateServiceType, deleteServiceType, isLoading } = serviceTypesStore;
+const {
+    getAllServiceType,
+    createServiceType,
+    updateServiceType,
+    deleteServiceType,
+    isLoading,
+} = serviceTypesStore;
 
 const query = ref({
     page: 1,
@@ -79,7 +90,10 @@ const closeModal = () => {
 const handleSubmit = async (data: ServiceTypeForm) => {
     try {
         if (editServiceType.value) {
-            await updateServiceType(editServiceType.value.service_type_id, data as UpdateServiceTypeDTO);
+            await updateServiceType(
+                editServiceType.value.service_type_id,
+                data as UpdateServiceTypeDTO,
+            );
             toast.add({
                 title: "Success",
                 description: "Service Type updated successfully",
@@ -97,7 +111,9 @@ const handleSubmit = async (data: ServiceTypeForm) => {
             });
         }
     } catch {
-        const key = editServiceType.value ? "updateServiceType" : "createServiceType";
+        const key = editServiceType.value
+            ? "updateServiceType"
+            : "createServiceType";
         const error = serviceTypesStore.getError(key);
         if (error) {
             toast.add({
@@ -136,7 +152,11 @@ const handleDelete = async () => {
     }
 };
 
-const { refresh } = await useAsyncData("service-types", () => getAllServiceType(query.value), { server: false });
+const { refresh } = await useAsyncData(
+    "service-types",
+    () => getAllServiceType(query.value),
+    { server: false },
+);
 
 // onMounted(async () => {
 //     console.log("mount service types");
@@ -146,11 +166,34 @@ const { refresh } = await useAsyncData("service-types", () => getAllServiceType(
 
 <template>
     <div class="w-full flex justify-end items-center gap-4 mb-3">
-        <UButton label="New Service Type" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal" />
+        <UButton
+            label="New Service Type"
+            icon="i-lucide-plus"
+            size="md"
+            color="primary"
+            variant="solid"
+            @click="showModal"
+        />
     </div>
 
-    <UTable :data="serviceTypes" :columns="columns" class="flex-1 border border-gray-300 rounded-lg" :loading="isLoading('getAllServiceType')" />
+    <UTable
+        :data="serviceTypes"
+        :columns="columns"
+        class="flex-1 border border-gray-300 rounded-lg"
+        :loading="isLoading('getAllServiceType')"
+    />
 
-    <FormNewServiceType v-model:open="open" @submit="(data: any) => handleSubmit(data)" @close="closeModal" :data="editServiceType" />
-    <FormDeleteConfirmation v-model:open="deleteOpen" title="Delete Service Type" :itemName="editServiceType?.name" confirmLabel="Delete" @delete="handleDelete" />
+    <FormNewServiceType
+        v-model:open="open"
+        @submit="(data: any) => handleSubmit(data)"
+        @close="closeModal"
+        :data="editServiceType"
+    />
+    <ModalDeleteConfirmation
+        v-model:open="deleteOpen"
+        title="Delete Service Type"
+        :itemName="editServiceType?.name"
+        confirmLabel="Delete"
+        @delete="handleDelete"
+    />
 </template>

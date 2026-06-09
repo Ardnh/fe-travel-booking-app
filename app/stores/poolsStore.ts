@@ -10,18 +10,31 @@ export const usePoolsStore = defineStore("pools", () => {
     const pool = ref<Pool | null>(null);
 
     const getAllPool = async (page: number, limit: number) => {
-        const result = await run("getAllPool", () => service.getAllPool(page, limit));
-        pools.value = result.data;
+        const result = await run("getAllPool", () =>
+            service.getAllPool(page, limit),
+        );
+
+        if (result.success) {
+            pools.value = result.data;
+        }
     };
 
     const getPoolByID = async (id: string) => {
         const result = await run("getPoolByID", () => service.getPoolByID(id));
-        pool.value = result.data;
+
+        if (result.success) {
+            pool.value = result.data;
+        }
     };
 
     const getPoolByVendorID = async (vendorId: string) => {
-        const result = await run("getPoolByVendorID", () => service.getPoolByVendorID(vendorId));
-        pools.value = result.data;
+        const result = await run("getPoolByVendorID", () =>
+            service.getPoolByVendorID(vendorId),
+        );
+
+        if (result.success) {
+            pools.value = result.data;
+        }
     };
 
     const createPool = async (req: CreatePoolDTO) => {
@@ -31,10 +44,14 @@ export const usePoolsStore = defineStore("pools", () => {
         }
     };
 
-    const updatePool = async (id: string, req: UpdatePoolDto) => {
-        const result = await run("updatePool", () => service.updatePool(id, req));
+    const updatePool = async (id: string, req: UpdatePoolDTO) => {
+        const result = await run("updatePool", () =>
+            service.updatePool(id, req),
+        );
         if (result.success) {
-            pools.value = pools.value.map((item) => (item.pool_id === id ? result.data : item));
+            pools.value = pools.value.map((item) =>
+                item.pool_id === id ? result.data : item,
+            );
         }
     };
 

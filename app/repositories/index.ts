@@ -7,3 +7,4 @@ export * from "./poolsRepository";
 export * from "./schedulesRepository";
 export * from "./serviceTypesRepository";
 export * from "./vendorsRepository";
+export * from "./areaRepository";

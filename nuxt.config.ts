@@ -3,7 +3,7 @@ export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
     devtools: { enabled: true },
     modules: ["@nuxt/ui", "@pinia/nuxt"],
-    css: ["~/assets/css/main.css"],
+    css: ["~/assets/css/main.css", "leaflet/dist/leaflet.css"],
     build: { transpile: ["konva"] },
     vite: {
         optimizeDeps: {
@@ -30,5 +30,6 @@ export default defineNuxtConfig({
         "/vendor/**": { ssr: false },
         "/platform/**": { ssr: false },
         "/select-role": { ssr: false },
+        "/api/wilayah/**": { proxy: "https://wilayah.id/api/**" },
     },
 });

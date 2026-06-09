@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { NavigationMenuItem, DropdownMenuItem } from "@nuxt/ui";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 
 const route = useRoute();
+const authStore = useAuthStore();
 const toast = useToast();
 
 const open = ref(false);
+const logoutOpen = ref(false);
+const logoutLoading = ref(false);
 const activePageName = ref("Dashboard");
 
 const links = [
@@ -52,37 +55,94 @@ const groups = computed(() => [
     },
 ]);
 
+const items = ref<DropdownMenuItem[][]>([
+    [
+        {
+            label: "Benjamin",
+            avatar: {
+                src: "https://github.com/benjamincanac.png",
+                loading: "lazy",
+            },
+            type: "label",
+        },
+    ],
+    [
+        {
+            label: "Profile",
+            icon: "i-lucide-user",
+        },
+    ],
+    [
+        {
+            label: "Logout",
+            icon: "i-lucide-log-out",
+            onSelect: () => {
+                logoutOpen.value = true;
+            },
+        },
+    ],
+]);
+
 const showModal = () => {
     open.value = !open.value;
 };
 </script>
 <template>
     <UDashboardGroup unit="rem">
-        <UDashboardSidebar id="default" v-model:open="open" collapsible resizable class="bg-elevated/25" :ui="{ footer: 'lg:border-t lg:border-default' }">
+        <UDashboardSidebar
+            id="default"
+            v-model:open="open"
+            collapsible
+            resizable
+            class="bg-elevated/25"
+            :ui="{ footer: 'lg:border-t lg:border-default' }"
+        >
             <template #header="{ collapsed }">
                 <TeamsMenu :collapsed="collapsed" />
             </template>
 
             <template #default="{ collapsed }">
-                <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+                <UDashboardSearchButton
+                    :collapsed="collapsed"
+                    class="bg-transparent ring-default"
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[0]" orientation="vertical" tooltip popover />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[0]"
+                    orientation="vertical"
+                    tooltip
+                    popover
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[1]"
+                    orientation="vertical"
+                    tooltip
+                    class="mt-auto"
+                />
             </template>
 
             <template #footer="{ collapsed }">
-                <UButton
-                    :avatar="{
-                        src: 'https://github.com/benjamincanac.png',
-                        loading: 'lazy' as const,
+                <UDropdownMenu
+                    :items="items"
+                    :ui="{
+                        content: 'w-48',
                     }"
-                    :label="collapsed ? undefined : 'Benjamin'"
-                    color="neutral"
-                    variant="ghost"
-                    class="w-full"
-                    :block="collapsed"
-                />
+                >
+                    <UButton
+                        :avatar="{
+                            src: 'https://github.com/benjamincanac.png',
+                            loading: 'lazy' as const,
+                        }"
+                        :label="collapsed ? undefined : 'Benjamin'"
+                        color="neutral"
+                        variant="ghost"
+                        class="w-full"
+                        :block="collapsed"
+                    />
+                </UDropdownMenu>
             </template>
         </UDashboardSidebar>
 
@@ -90,15 +150,15 @@ const showModal = () => {
 
         <UDashboardPanel hboardPanel id="home">
             <template #header>
-                <UDashboardNavbar :title="activePageName" :ui="{ right: 'gap-3' }">
+                <UDashboardNavbar
+                    :title="activePageName"
+                    :ui="{ right: 'gap-3' }"
+                >
                     <template #leading>
                         <UDashboardSidebarCollapse />
                     </template>
 
                     <template #right>
-                        <UButton v-if="activePageName !== 'Dashboard'" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()">
-                            New {{ activePageName }}
-                        </UButton>
                         <UColorModeButton />
                     </template>
                 </UDashboardNavbar>
@@ -114,14 +174,29 @@ const showModal = () => {
         </UDashboardPanel>
     </UDashboardGroup>
 
-    <UModal v-model:open="open" title="Modal with footer" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="open"
+        title="Modal with footer"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
             <div class="">{{ activePageName }}</div>
         </template>
 
         <template #footer="{ close }">
-            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+            <UButton
+                label="Cancel"
+                color="neutral"
+                variant="outline"
+                @click="close"
+            />
             <UButton label="Submit" color="neutral" />
         </template>
     </UModal>
+
+    <ModalLogoutConfirmation
+        v-model:open="logoutOpen"
+        :loading="logoutLoading"
+        @confirm="authStore.logout()"
+    />
 </template>

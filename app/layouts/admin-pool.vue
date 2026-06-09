@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { NavigationMenuItem, DropdownMenuItem } from "@nuxt/ui";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
+import { useAuthStore } from "~/stores/authStore";
 
 const route = useRoute();
 const toast = useToast();
+const authStore = useAuthStore();
 
 const open = ref(false);
+const logoutOpen = ref(false);
 const activePageName = ref("Dashboard");
 
 const links = [
@@ -50,6 +53,29 @@ const groups = computed(() => [
             },
         ],
     },
+]);
+
+const items = ref<DropdownMenuItem[][]>([
+    [
+        {
+            label: "Benjamin",
+            avatar: {
+                src: "https://github.com/benjamincanac.png",
+                loading: "lazy",
+            },
+            type: "label",
+        },
+    ],
+    [
+        {
+            label: "Logout",
+            icon: "i-lucide-log-out",
+            kbds: ["shift", "meta", "q"],
+            onSelect: () => {
+                logoutOpen.value = true;
+            },
+        },
+    ],
 ]);
 
 const showModal = () => {
@@ -122,17 +148,24 @@ onMounted(async () => {
             </template>
 
             <template #footer="{ collapsed }">
-                <UButton
-                    :avatar="{
-                        src: 'https://github.com/benjamincanac.png',
-                        loading: 'lazy' as const,
+                <UDropdownMenu
+                    :items="items"
+                    :ui="{
+                        content: 'w-48',
                     }"
-                    :label="collapsed ? undefined : 'Benjamin'"
-                    color="neutral"
-                    variant="ghost"
-                    class="w-full"
-                    :block="collapsed"
-                />
+                >
+                    <UButton
+                        :avatar="{
+                            src: 'https://github.com/benjamincanac.png',
+                            loading: 'lazy' as const,
+                        }"
+                        :label="collapsed ? undefined : 'Benjamin'"
+                        color="neutral"
+                        variant="ghost"
+                        class="w-full"
+                        :block="collapsed"
+                    />
+                </UDropdownMenu>
             </template>
         </UDashboardSidebar>
 
@@ -189,4 +222,9 @@ onMounted(async () => {
             <UButton label="Submit" color="neutral" />
         </template>
     </UModal>
+
+    <ModalLogoutConfirmation
+        v-model:open="logoutOpen"
+        @confirm="authStore.logout()"
+    />
 </template>

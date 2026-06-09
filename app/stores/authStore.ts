@@ -28,10 +28,18 @@ export const useAuthStore = defineStore("auth", () => {
 
     const register = () => {};
 
-    return {
-        isLoading,
-        getError,
-        login,
-        register,
+    const logout = () => {
+        storage.remove("token");
+        storage.remove("expire_date");
+        loginData.value = null;
+        navigateTo("/login");
     };
+
+    return {
+    isLoading,
+    getError,
+    login,
+    register,
+    logout,
+};
 });

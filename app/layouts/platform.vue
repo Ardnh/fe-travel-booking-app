@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { NavigationMenuItem, DropdownMenuItem } from "@nuxt/ui";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
+import { useAuthStore } from "~/stores/authStore";
 
 const toast = useToast();
+const authStore = useAuthStore();
 
 const open = ref(false);
+const logoutOpen = ref(false);
+const logoutLoading = ref(false);
 const activePageName = ref("Dashboard");
 
 const links = [
@@ -38,6 +42,34 @@ const links = [
         },
     ],
 ] satisfies NavigationMenuItem[][];
+
+const items = ref<DropdownMenuItem[][]>([
+    [
+        {
+            label: "Benjamin",
+            avatar: {
+                src: "https://github.com/benjamincanac.png",
+                loading: "lazy",
+            },
+            type: "label",
+        },
+    ],
+    [
+        {
+            label: "Profile",
+            icon: "i-lucide-user",
+        },
+    ],
+    [
+        {
+            label: "Logout",
+            icon: "i-lucide-log-out",
+            onSelect: () => {
+                logoutOpen.value = true;
+            },
+        },
+    ],
+]);
 
 onMounted(async () => {
     const cookie = useCookie("cookie-consent");
@@ -105,17 +137,24 @@ onMounted(async () => {
             </template>
 
             <template #footer="{ collapsed }">
-                <UButton
-                    :avatar="{
-                        src: 'https://github.com/benjamincanac.png',
-                        loading: 'lazy' as const,
+                <UDropdownMenu
+                    :items="items"
+                    :ui="{
+                        content: 'w-48',
                     }"
-                    :label="collapsed ? undefined : 'Benjamin'"
-                    :block="collapsed"
-                    color="neutral"
-                    variant="ghost"
-                    class="w-full"
-                />
+                >
+                    <UButton
+                        :avatar="{
+                            src: 'https://github.com/benjamincanac.png',
+                            loading: 'lazy' as const,
+                        }"
+                        :label="collapsed ? undefined : 'Benjamin'"
+                        color="neutral"
+                        variant="ghost"
+                        class="w-full"
+                        :block="collapsed"
+                    />
+                </UDropdownMenu>
             </template>
         </UDashboardSidebar>
 
@@ -144,4 +183,10 @@ onMounted(async () => {
             </template>
         </UDashboardPanel>
     </UDashboardGroup>
+
+    <ModalLogoutConfirmation
+        v-model:open="logoutOpen"
+        :loading="logoutLoading"
+        @confirm="authStore.logout()"
+    />
 </template>

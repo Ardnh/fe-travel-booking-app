@@ -5,3 +5,4 @@ export * from "./dto/vendorsDto";
 export * from "./dto/layoutsDto";
 export * from "./dto/serviceTypesDto";
 export * from "./dto/poolsDto";
+export * from "./dto/areaDto";

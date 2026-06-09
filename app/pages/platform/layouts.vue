@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { getLayoutsColumns } from "~/constants";
 import type { TableColumn } from "@nuxt/ui";
-import type { LayoutForm, Layouts, UpdateLayoutDto, CreateLayoutDto } from "~/models";
+import type {
+    LayoutForm,
+    Layouts,
+    UpdateLayoutDto,
+    CreateLayoutDto,
+} from "~/models";
 
 definePageMeta({
     layout: "platform",
@@ -15,7 +20,14 @@ const usersStore = useUsersStore();
 const { layouts } = storeToRefs(layoutsStore);
 const { userProfile } = storeToRefs(usersStore);
 
-const { getAllLayouts, createLayout, deleteLayout, updateLayout, isLoading, getError } = layoutsStore;
+const {
+    getAllLayouts,
+    createLayout,
+    deleteLayout,
+    updateLayout,
+    isLoading,
+    getError,
+} = layoutsStore;
 const { getUserProfile } = usersStore;
 
 const query = ref({
@@ -152,11 +164,15 @@ const handleDelete = async () => {
     }
 };
 
-const { pending, error, refresh } = await useAsyncData("service-types", () => getAllLayouts(query.value), {
-    watch: [query],
-    server: false,
-    lazy: false,
-});
+const { pending, error, refresh } = await useAsyncData(
+    "service-types",
+    () => getAllLayouts(query.value),
+    {
+        watch: [query],
+        server: false,
+        lazy: false,
+    },
+);
 
 // onMounted(async () => {
 //     console.log("mount service types");
@@ -166,11 +182,27 @@ const { pending, error, refresh } = await useAsyncData("service-types", () => ge
 
 <template>
     <div class="w-full flex justify-end items-center gap-4 mb-3">
-        <UButton label="New Layouts" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal()" />
+        <UButton
+            label="New Layouts"
+            icon="i-lucide-plus"
+            size="md"
+            color="primary"
+            variant="solid"
+            @click="showModal()"
+        />
     </div>
 
-    <UTable :data="layouts" :columns="columns" class="flex-1 border border-gray-300 rounded-lg" />
+    <UTable
+        :data="layouts"
+        :columns="columns"
+        class="flex-1 border border-gray-300 rounded-lg"
+    />
 
-    <FormNewLayouts v-model:open="open" @submit="(data: LayoutForm) => handleSubmit(data)" @close="closeModal" :data="editLayout" />
-    <FormDeleteConfirmation v-model:open="deleteOpen" @delete="handleDelete" />
+    <FormNewLayouts
+        v-model:open="open"
+        @submit="(data: LayoutForm) => handleSubmit(data)"
+        @close="closeModal"
+        :data="editLayout"
+    />
+    <ModalDeleteConfirmation v-model:open="deleteOpen" @delete="handleDelete" />
 </template>
