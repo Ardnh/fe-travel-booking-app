@@ -1,10 +1,12 @@
 import type { Vendor, CreateVendorDTO, UpdateVendorDTO } from "~/models";
 import { useAsync } from "~/composables";
 import { useVendorService } from "~/services";
+import { useUsersStore } from "~/stores";
 
 export const useVendorStore = defineStore("vendor", () => {
     // ------------ INSTANCE ------------
     const { isLoading, getError, run } = useAsync();
+    const userStore = useUsersStore();
     const service = useVendorService();
 
     // ------------ API STATE ------------

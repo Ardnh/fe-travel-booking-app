@@ -10,7 +10,7 @@ const {} = storeToRefs(vendorStore);
 const { hasMultiRole, hasRole } = usePermissions();
 
 const { getUserProfile } = userStore;
-const { createVendor } = vendorStore;
+const { createVendor, getError } = vendorStore;
 
 const open = ref(false);
 
@@ -24,17 +24,22 @@ const handleSubmit = async (data: any) => {
             ...data,
             owner_user_id: userProfile.value.user_id,
         });
+
+        await getUserProfile();
     } catch (e) {
-        toast.add({
-            title: `${e}`,
-            duration: 0,
-            close: false,
-        });
+        const error = getError("createVendor");
+        if (error) {
+            toast.add({
+                title: "Failed to Create Vendor",
+                description: error,
+                color: "error",
+            });
+        }
     }
 };
 
 const createOrGoToVendor = () => {
-    if (userHasVendor) {
+    if (userHasVendor.value) {
         navigateTo("/vendor");
     } else {
         open.value = true;

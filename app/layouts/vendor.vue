@@ -105,7 +105,11 @@ const showModal = () => {
             </template>
 
             <template #body>
-                <slot />
+                <Transition name="page" mode="out-in">
+                    <div :key="$route.fullPath">
+                        <slot />
+                    </div>
+                </Transition>
             </template>
         </UDashboardPanel>
     </UDashboardGroup>
