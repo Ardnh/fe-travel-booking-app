@@ -1,12 +1,12 @@
 <script setup lang="ts">
 definePageMeta({
     layout: "vendor",
+    ssr: false,
 });
 useHead({
-    title: "Manage Users",
+    title: "Pricing Matrix",
 });
 </script>
-
 <template>
-    <div>vendor manage users</div>
+    <div>pricing matrix</div>
 </template>

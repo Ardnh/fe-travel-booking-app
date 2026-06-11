@@ -7,6 +7,10 @@ definePageMeta({
     layout: "vendor",
 });
 
+useHead({
+    title: "Vendor Dashboard",
+});
+
 onMounted(async () => {
     if (vendor.value != null) return;
     await getVendorByOwnerUserId();
