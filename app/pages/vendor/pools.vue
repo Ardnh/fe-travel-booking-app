@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Pool, CreatePoolDTO } from "~/models";
+import type { Pool, CreatePoolDTO, PoolParams } from "~/models";
 import type { TableColumn } from "@nuxt/ui";
+import { INITIAL_PARAMS } from "~/constants/common";
 
 definePageMeta({
     layout: "vendor",
@@ -17,25 +18,11 @@ const vendorStore = useVendorStore();
 const { pools } = storeToRefs(poolsStore);
 const { vendor } = storeToRefs(vendorStore);
 
-const {
-    getAllPool,
-    getPoolByVendorID,
-    createPool,
-    updatePool,
-    deletePool,
-    isLoading,
-    getError,
-} = poolsStore;
+const { getAllPool, getPoolByVendorID, createPool, updatePool, deletePool, isLoading, getError, poolsPagination } = poolsStore;
 
 const { getVendorByOwnerUserId } = vendorStore;
 
-const query = ref({
-    page: 1,
-    page_size: 30,
-    search: "",
-    sort_by: "created_at",
-    sort_order: "DESC",
-});
+const params = ref<PoolParams>({ ...INITIAL_PARAMS });
 
 const open = ref(false);
 const deleteOpen = ref(false);
@@ -44,7 +31,9 @@ const UButton = resolveComponent("UButton");
 
 const columns: TableColumn<Pool>[] = [
     { accessorKey: "name", header: "Name" },
+    { accessorKey: "province", header: "Province" },
     { accessorKey: "city", header: "City" },
+    { accessorKey: "district", header: "District" },
     {
         accessorKey: "address",
         header: "Address",
@@ -159,55 +148,58 @@ const handleDelete = async () => {
     }
 };
 
+const items = Array.from({ length: 10 }, (_, i) => ({
+    id: i + 1,
+    title: `Item ${i + 1}`,
+    description: `Description for item ${i + 1}`,
+}));
+
+const onUpdatePage = (page: number) => {
+    params.value.page = page;
+};
+
 onMounted(async () => {
     if (vendor.value == null) {
         await getVendorByOwnerUserId();
     }
     if (vendor.value) {
-        await getPoolByVendorID(vendor.value.vendor_id);
+        await getPoolByVendorID(vendor.value.vendor_id, params.value);
     }
 });
 
 watch(
+    () => params.value.page,
+    (page) => {
+        if (!vendor.value?.vendor_id) return;
+        getPoolByVendorID(vendor.value?.vendor_id, params.value);
+    },
+);
+
+watch(
     () => vendor.value?.vendor_id,
     (vendorId) => {
-        if (vendorId) {
-            getPoolByVendorID(vendorId);
-        }
+        if (!vendorId) return;
+        getPoolByVendorID(vendorId, params.value);
     },
 );
 </script>
 
 <template>
-    <div class="w-full flex justify-end items-center gap-4 mb-3">
-        <UButton
-            label="New Pool"
-            icon="i-lucide-plus"
-            size="md"
-            color="primary"
-            variant="solid"
-            @click="showModal"
-        />
+    <div class="min-h-[86vh]">
+        <div class="w-full flex justify-end items-center gap-4 mb-3">
+            <UButton label="New Pool" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal" />
+        </div>
+
+        <UScrollArea v-slot="{ item, index }" :items="items" orientation="horizontal" class="w-full my-3 data-[orientation=vertical]:h-10">
+            <UBadge class="mr-1" color="neutral" variant="outline" size="lg">{{ item.title }}</UBadge>
+        </UScrollArea>
+
+        <UTable sticky :data="pools" :columns="columns" class="flex-1 border border-gray-300 rounded-lg min-h-[70vh]" :loading="isLoading('getPoolByVendorID')" />
+        <div class="h-auto flex justify-end my-3">
+            <UPagination v-model:page="poolsPagination.current_page" :total="poolsPagination.total_pages" @update:page="onUpdatePage" />
+        </div>
     </div>
 
-    <UTable
-        :data="pools"
-        :columns="columns"
-        class="flex-1 border border-gray-300 rounded-lg"
-        :loading="isLoading('getPoolByVendorID')"
-    />
-
-    <FormNewPool
-        v-model:open="open"
-        @submit="(data: any) => handleSubmit(data)"
-        @close="closeModal"
-        :data="editPool"
-    />
-    <ModalDeleteConfirmation
-        v-model:open="deleteOpen"
-        title="Delete Pool"
-        :itemName="editPool?.name"
-        confirmLabel="Delete"
-        @delete="handleDelete"
-    />
+    <FormNewPool v-model:open="open" @submit="(data: any) => handleSubmit(data)" @close="closeModal" :data="editPool" />
+    <ModalDeleteConfirmation v-model:open="deleteOpen" title="Delete Pool" :itemName="editPool?.name" confirmLabel="Delete" @delete="handleDelete" />
 </template>

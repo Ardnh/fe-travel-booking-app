@@ -1,19 +1,19 @@
-import type { CreatePoolDTO, UpdatePoolDTO } from "~/models";
+import type { CreatePoolDTO, UpdatePoolDTO, PoolParams } from "~/models";
 import { usePoolsRepository } from "~/repositories";
 
 export const usePoolsService = () => {
     const repo = usePoolsRepository();
 
-    const getAllPool = (page: number, limit: number) => {
-        return repo.getAllPool(page, limit);
+    const getAllPool = (params: PoolParams) => {
+        return repo.getAllPool(params.page, params.page_size);
     };
 
     const getPoolByID = (id: string) => {
         return repo.getPoolByID(id);
     };
 
-    const getPoolByVendorID = (vendorId: string) => {
-        return repo.getPoolByVendorID(vendorId);
+    const getPoolByVendorID = (vendorId: string, params: PoolParams) => {
+        return repo.getPoolByVendorID(vendorId, params.page, params.page_size);
     };
 
     const createPool = (vendorId: string, req: CreatePoolDTO) => {

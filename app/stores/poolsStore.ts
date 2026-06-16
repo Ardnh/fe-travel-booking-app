@@ -1,7 +1,8 @@
-import type { CreatePoolDTO, Pool, UpdatePoolDTO } from "~/models";
+import type { CreatePoolDTO, Pagination, Pool, UpdatePoolDTO, PoolParams } from "~/models";
 import { useAsync } from "~/composables";
 import { usePoolsService } from "~/services";
 import { useVendorStore } from "~/stores";
+import { INITIAL_PAGINATION } from "~/constants";
 
 export const usePoolsStore = defineStore("pools", () => {
     const vendorStore = useVendorStore();
@@ -12,9 +13,10 @@ export const usePoolsStore = defineStore("pools", () => {
 
     const pools = ref<Pool[]>([]);
     const pool = ref<Pool | null>(null);
+    const poolsPagination = ref<Pagination>({ ...INITIAL_PAGINATION });
 
-    const getAllPool = async (page: number, limit: number) => {
-        const result = await run("getAllPool", () => service.getAllPool(page, limit));
+    const getAllPool = async (params: PoolParams) => {
+        const result = await run("getAllPool", () => service.getAllPool(params));
 
         if (result.success) {
             pools.value = result.data;
@@ -29,11 +31,12 @@ export const usePoolsStore = defineStore("pools", () => {
         }
     };
 
-    const getPoolByVendorID = async (vendorId: string) => {
-        const result = await run("getPoolByVendorID", () => service.getPoolByVendorID(vendorId));
+    const getPoolByVendorID = async (vendorId: string, params: PoolParams) => {
+        const result = await run("getPoolByVendorID", () => service.getPoolByVendorID(vendorId, params));
 
         if (result.success) {
             pools.value = result.data;
+            poolsPagination.value = result.pagination;
         }
     };
 
@@ -62,6 +65,7 @@ export const usePoolsStore = defineStore("pools", () => {
     };
 
     return {
+        poolsPagination,
         isLoading,
         getError,
         pools,

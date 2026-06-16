@@ -1,4 +1,4 @@
-import type { BaseResponse, BasePagination } from "../common";
+import type { BaseResponse, BasePagination, Params } from "../common";
 
 export type PoolStatus = "active" | "inactive" | "suspended" | "pending";
 
@@ -77,3 +77,7 @@ export interface CreatePoolResponse extends BaseResponse {
 }
 
 export interface UpdatePoolResponse extends CreatePoolResponse {}
+
+export interface PoolParams extends Params {
+    search?: string;
+}
