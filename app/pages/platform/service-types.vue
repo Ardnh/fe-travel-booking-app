@@ -11,6 +11,9 @@ definePageMeta({
     layout: "platform",
     ssr: false,
 });
+useHead({
+    title: "Service Types",
+});
 
 const toast = useToast();
 const serviceTypesStore = useServiceTypesStore();

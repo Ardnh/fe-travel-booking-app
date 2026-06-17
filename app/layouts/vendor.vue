@@ -24,7 +24,7 @@ const links = [
         },
         {
             label: "Pricing Matrix",
-            icon: "i-lucide-house",
+            icon: "i-lucide-circle-percent",
             to: "/vendor/pricing-matrix",
             onSelect: () => {
                 open.value = false;
@@ -33,7 +33,7 @@ const links = [
         },
         {
             label: "Manage Pools",
-            icon: "i-lucide-house",
+            icon: "i-lucide-route",
             to: "/vendor/pools",
             onSelect: () => {
                 open.value = false;
@@ -41,8 +41,8 @@ const links = [
             },
         },
         {
-            label: "ManageSchedules",
-            icon: "i-lucide-house",
+            label: "Manage Schedules",
+            icon: "i-lucide-calendar-check",
             to: "/vendor/schedules",
             onSelect: () => {
                 open.value = false;
@@ -51,7 +51,7 @@ const links = [
         },
         {
             label: "Manage Users",
-            icon: "i-lucide-house",
+            icon: "i-lucide-user",
             to: "/vendor/manage-users",
             onSelect: () => {
                 open.value = false;
@@ -116,17 +116,39 @@ const showModal = () => {
 </script>
 <template>
     <UDashboardGroup unit="rem">
-        <UDashboardSidebar id="default" v-model:open="open" collapsible resizable class="bg-elevated/25" :ui="{ footer: 'lg:border-t lg:border-default' }">
+        <UDashboardSidebar
+            id="default"
+            v-model:open="open"
+            collapsible
+            resizable
+            class="bg-elevated/25"
+            :ui="{ footer: 'lg:border-t lg:border-default' }"
+        >
             <template #header="{ collapsed }">
                 <TeamsMenu :collapsed="collapsed" />
             </template>
 
             <template #default="{ collapsed }">
-                <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+                <UDashboardSearchButton
+                    :collapsed="collapsed"
+                    class="bg-transparent ring-default"
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[0]" orientation="vertical" tooltip popover />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[0]"
+                    orientation="vertical"
+                    tooltip
+                    popover
+                />
 
-                <UNavigationMenu :collapsed="collapsed" :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
+                <UNavigationMenu
+                    :collapsed="collapsed"
+                    :items="links[1]"
+                    orientation="vertical"
+                    tooltip
+                    class="mt-auto"
+                />
             </template>
 
             <template #footer="{ collapsed }">
@@ -155,7 +177,10 @@ const showModal = () => {
 
         <UDashboardPanel hboardPanel id="home">
             <template #header>
-                <UDashboardNavbar :title="activePageName" :ui="{ right: 'gap-3' }">
+                <UDashboardNavbar
+                    :title="activePageName"
+                    :ui="{ right: 'gap-3' }"
+                >
                     <template #leading>
                         <UDashboardSidebarCollapse />
                     </template>
@@ -176,16 +201,29 @@ const showModal = () => {
         </UDashboardPanel>
     </UDashboardGroup>
 
-    <UModal v-model:open="open" title="Modal with footer" :ui="{ footer: 'justify-end' }">
+    <UModal
+        v-model:open="open"
+        title="Modal with footer"
+        :ui="{ footer: 'justify-end' }"
+    >
         <template #body>
             <div class="">{{ activePageName }}</div>
         </template>
 
         <template #footer="{ close }">
-            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+            <UButton
+                label="Cancel"
+                color="neutral"
+                variant="outline"
+                @click="close"
+            />
             <UButton label="Submit" color="neutral" />
         </template>
     </UModal>
 
-    <ModalLogoutConfirmation v-model:open="logoutOpen" :loading="logoutLoading" @confirm="authStore.logout()" />
+    <ModalLogoutConfirmation
+        v-model:open="logoutOpen"
+        :loading="logoutLoading"
+        @confirm="authStore.logout()"
+    />
 </template>

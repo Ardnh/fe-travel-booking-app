@@ -12,6 +12,9 @@ definePageMeta({
     layout: "platform",
     ssr: false,
 });
+useHead({
+    title: "Layouts",
+});
 
 const toast = useToast();
 const layoutsStore = useLayoutsStore();

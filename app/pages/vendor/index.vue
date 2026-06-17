@@ -8,7 +8,7 @@ definePageMeta({
 });
 
 useHead({
-    title: "Vendor Dashboard",
+    title: "Dashboard",
 });
 
 onMounted(async () => {

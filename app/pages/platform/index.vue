@@ -2,6 +2,9 @@
 definePageMeta({
     layout: "platform",
 });
+useHead({
+    title: "Dashboard",
+});
 </script>
 
 <template>
