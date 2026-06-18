@@ -38,6 +38,7 @@ const open = ref(false);
 const deleteOpen = ref(false);
 const editPool = ref<Pool | undefined>(undefined);
 const UButton = resolveComponent("UButton");
+const UBadge = resolveComponent("UBadge");
 
 const columns: TableColumn<Pool>[] = [
     { accessorKey: "name", header: "Name" },
@@ -57,9 +58,32 @@ const columns: TableColumn<Pool>[] = [
                 row.original.address,
             ),
     },
-    { accessorKey: "open_time", header: "Open Time" },
-    { accessorKey: "close_time", header: "Close Time" },
-    { accessorKey: "status", header: "Status" },
+    {
+        accessorKey: "open_time",
+        header: "Open Time",
+    },
+    {
+        accessorKey: "close_time",
+        header: "Close Time",
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+            const color = {
+                active: "success" as const,
+                inactive: "error" as const,
+                suspended: "neutral" as const,
+                pending: "warning" as const,
+            }[row.getValue("status") as string];
+
+            return h(
+                UBadge,
+                { class: "capitalize", variant: "subtle", color },
+                () => row.getValue("status"),
+            );
+        },
+    },
     {
         id: "actions",
         header: "Actions",
@@ -195,8 +219,8 @@ watch(
 </script>
 
 <template>
-    <div class="min-h-[86vh]">
-        <div class="w-full flex justify-end items-center gap-4 mb-3">
+    <div class="w-full flex-1">
+        <div class="w-full flex justify-end items-center mb-3">
             <UButton
                 label="New Pool"
                 icon="i-lucide-plus"
@@ -207,7 +231,7 @@ watch(
             />
         </div>
 
-        <UScrollArea
+        <!-- <UScrollArea
             v-slot="{ item, index }"
             :items="items"
             orientation="horizontal"
@@ -216,16 +240,16 @@ watch(
             <UBadge class="mr-1" color="neutral" variant="outline" size="lg">{{
                 item.title
             }}</UBadge>
-        </UScrollArea>
+        </UScrollArea> -->
 
         <UTable
             sticky
             :data="pools"
             :columns="columns"
-            class="flex-1 border border-gray-300 rounded-lg min-h-[70vh]"
+            class="flex-1 min-h-[74vh] border border-accented rounded-lg"
             :loading="isLoading('getPoolByVendorID')"
         />
-        <div class="h-auto flex justify-end my-3">
+        <div class="h-auto flex justify-end mt-3">
             <UPagination
                 v-model:page="poolsPagination.current_page"
                 :total="poolsPagination.total_pages"
