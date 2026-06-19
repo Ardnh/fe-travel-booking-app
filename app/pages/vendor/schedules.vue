@@ -6,6 +6,18 @@ definePageMeta({
 useHead({
     title: "Schedules",
 });
+
+const open = ref(false);
+
+const showModal = () => {
+    console.log("show modal");
+    open.value = true;
+};
+
+const handleSubmit = (data: any) => {
+    console.log("submit schedule");
+    console.log(toRaw(data));
+};
 </script>
 <template>
     <div class="w-full flex-1">
@@ -16,6 +28,7 @@ useHead({
                 size="md"
                 color="primary"
                 variant="solid"
+                @click="showModal"
             />
         </div>
 
@@ -32,6 +45,11 @@ useHead({
                 :total="poolsPagination.total_pages"
                 @update:page="onUpdatePage"
             />
-        </div> -->
+        </div>  -->
     </div>
+
+    <FormNewSchedule
+        v-model:open="open"
+        @submit="(data: any) => handleSubmit(data)"
+    />
 </template>

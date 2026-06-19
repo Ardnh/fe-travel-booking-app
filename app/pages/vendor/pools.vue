@@ -197,23 +197,14 @@ onMounted(async () => {
         await getVendorByOwnerUserId();
     }
     if (vendor.value) {
-        await getPoolByVendorID(vendor.value.vendor_id, params.value);
+        await getPoolByVendorID(params.value);
     }
 });
 
 watch(
     () => params.value.page,
     (page) => {
-        if (!vendor.value?.vendor_id) return;
-        getPoolByVendorID(vendor.value?.vendor_id, params.value);
-    },
-);
-
-watch(
-    () => vendor.value?.vendor_id,
-    (vendorId) => {
-        if (!vendorId) return;
-        getPoolByVendorID(vendorId, params.value);
+        getPoolByVendorID(params.value);
     },
 );
 </script>

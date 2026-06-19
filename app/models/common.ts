@@ -20,3 +20,8 @@ export interface Params {
     page: number;
     page_size: number;
 }
+
+export interface Options {
+    label: string;
+    value: string;
+}

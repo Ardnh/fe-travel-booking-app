@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { user } from "#build/ui";
+
 // ── Tipe ───────────────────────────────────────────────────────────────
 interface TimeBand {
     label: string;
@@ -20,9 +22,18 @@ interface ScheduleBulkForm {
     priceBands: TimeBand[];
 }
 
+// --- Instance ───────────────────────────────────────────────────────────────
+const poolsStore = usePoolsStore();
+const { poolOptions } = storeToRefs(poolsStore);
+const { getPoolByVendorIdOptions } = poolsStore;
+
+// --- Fetch Data ───────────────────────────────────────────────────────────────
+
 const open = defineModel<boolean>("open", { default: false });
 const props = defineProps<{ data?: ScheduleBulkForm }>();
 const emit = defineEmits<{ submit: [data: ScheduleBulkForm] }>();
+
+const openPoolOptions = ref(false);
 
 const close = () => {
     open.value = false;
@@ -61,11 +72,11 @@ const layouts = [
 const dayNames = ["Mg", "Sn", "Sl", "Rb", "Km", "Jm", "Sb"]; // index 0..6
 
 // ── State form ─────────────────────────────────────────────────────────
-const originPoolId = ref(props.data?.originPoolId ?? "pool-cikini");
+const originPoolId = ref(props.data?.originPoolId ?? "");
 const destinationMode = ref<"city" | "pools">(
     props.data?.destinationMode ?? "city",
 );
-const destinationCity = ref(props.data?.destinationCity ?? "Bandung");
+const destinationCity = ref(props.data?.destinationCity ?? "");
 const destinationPoolIds = ref<string[]>(props.data?.destinationPoolIds ?? []);
 const departureTimes = ref<string[]>(
     props.data?.departureTimes ?? ["06:00", "09:00", "14:00", "20:00", "22:00"],
@@ -203,6 +214,12 @@ const submit = () => {
         priceBands: bands.value,
     });
 };
+
+const onOpenPoolMenu = async () => {
+    if (poolOptions.value.length == 0) {
+        await getPoolByVendorIdOptions();
+    }
+};
 </script>
 
 <template>
@@ -229,14 +246,17 @@ const submit = () => {
                     </template>
                     <div class="grid gap-4 sm:grid-cols-2">
                         <UFormField label="Pool asal">
-                            <USelect
+                            <USelectMenu
                                 v-model="originPoolId"
-                                :items="originPools"
+                                :items="poolOptions"
+                                @update:open="onOpenPoolMenu"
+                                value-key="value"
+                                placeholder="Select origin pool"
                                 class="w-full"
                             />
                         </UFormField>
                         <UFormField label="Tujuan">
-                            <UButtonGroup class="w-full">
+                            <UFieldGroup class="w-full">
                                 <UButton
                                     label="Per kota"
                                     class="flex-1 justify-center"
@@ -267,7 +287,7 @@ const submit = () => {
                                     "
                                     @click="destinationMode = 'pools'"
                                 />
-                            </UButtonGroup>
+                            </UFieldGroup>
                         </UFormField>
                     </div>
 
@@ -282,10 +302,11 @@ const submit = () => {
                     <USelectMenu
                         v-if="destinationMode === 'pools'"
                         v-model="destinationPoolIds"
-                        :items="poolsByCity[destinationCity] ?? []"
-                        value-key="value"
                         multiple
-                        placeholder="Pilih pool tujuan"
+                        :items="poolOptions"
+                        @update:open="onOpenPoolMenu"
+                        value-key="value"
+                        placeholder="Select origin pool"
                         class="mt-3 w-full"
                     />
 
