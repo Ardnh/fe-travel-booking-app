@@ -72,6 +72,10 @@ export interface PoolListResponse extends BaseResponse, BasePagination {
     data: Pool[];
 }
 
+export interface AvailableLocationsResponse extends BaseResponse {
+    data: string[];
+}
+
 export interface CreatePoolResponse extends BaseResponse {
     data: Pool;
 }

@@ -19,16 +19,7 @@ useHead({
     title: `Pools ${vendor.value ? "| " + vendor.value.business_name : ""}`,
 });
 
-const {
-    getAllPool,
-    getPoolByVendorID,
-    createPool,
-    updatePool,
-    deletePool,
-    isLoading,
-    getError,
-    poolsPagination,
-} = poolsStore;
+const { getAllPool, getPoolByVendorID, createPool, updatePool, deletePool, isLoading, getError, poolsPagination } = poolsStore;
 
 const { getVendorByOwnerUserId } = vendorStore;
 
@@ -77,11 +68,7 @@ const columns: TableColumn<Pool>[] = [
                 pending: "warning" as const,
             }[row.getValue("status") as string];
 
-            return h(
-                UBadge,
-                { class: "capitalize", variant: "subtle", color },
-                () => row.getValue("status"),
-            );
+            return h(UBadge, { class: "capitalize", variant: "subtle", color }, () => row.getValue("status"));
         },
     },
     {
@@ -212,14 +199,7 @@ watch(
 <template>
     <div class="w-full flex-1">
         <div class="w-full flex justify-end items-center mb-3">
-            <UButton
-                label="New Pool"
-                icon="i-lucide-plus"
-                size="md"
-                color="primary"
-                variant="solid"
-                @click="showModal"
-            />
+            <UButton label="New Pool" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal" />
         </div>
 
         <!-- <UScrollArea
@@ -233,33 +213,12 @@ watch(
             }}</UBadge>
         </UScrollArea> -->
 
-        <UTable
-            sticky
-            :data="pools"
-            :columns="columns"
-            class="flex-1 min-h-[74vh] border border-accented rounded-lg"
-            :loading="isLoading('getPoolByVendorID')"
-        />
+        <UTable sticky :data="pools" :columns="columns" class="flex-1 h-[75vh] border border-accented rounded-lg" :loading="isLoading('getPoolByVendorID')" />
         <div class="h-auto flex justify-end mt-3">
-            <UPagination
-                v-model:page="poolsPagination.current_page"
-                :total="poolsPagination.total_pages"
-                @update:page="onUpdatePage"
-            />
+            <UPagination v-model:page="poolsPagination.current_page" :total="poolsPagination.total_pages" @update:page="onUpdatePage" />
         </div>
     </div>
 
-    <FormNewPool
-        v-model:open="open"
-        @submit="(data: any) => handleSubmit(data)"
-        @close="closeModal"
-        :data="editPool"
-    />
-    <ModalDeleteConfirmation
-        v-model:open="deleteOpen"
-        title="Delete Pool"
-        :itemName="editPool?.name"
-        confirmLabel="Delete"
-        @delete="handleDelete"
-    />
+    <FormNewPool v-model:open="open" @submit="(data: any) => handleSubmit(data)" @close="closeModal" :data="editPool" />
+    <ModalDeleteConfirmation v-model:open="deleteOpen" title="Delete Pool" :itemName="editPool?.name" confirmLabel="Delete" @delete="handleDelete" />
 </template>

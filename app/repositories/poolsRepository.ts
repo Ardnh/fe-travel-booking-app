@@ -1,4 +1,4 @@
-import type { BaseResponse, CreatePoolDTO, PoolResponse, PoolListResponse, UpdatePoolDTO, CreatePoolResponse, UpdatePoolResponse } from "~/models";
+import type { BaseResponse, CreatePoolDTO, PoolResponse, PoolListResponse, UpdatePoolDTO, CreatePoolResponse, UpdatePoolResponse, AvailableLocationsResponse } from "~/models";
 
 export const usePoolsRepository = () => {
     const { api } = useApi();
@@ -9,6 +9,8 @@ export const usePoolsRepository = () => {
         getPoolByID: (id: string) => api<PoolResponse>(`/pool-points/${id}`),
         getPoolByVendorID: (vendorId: string, page: number, pageSize: number) =>
             api<PoolListResponse>(`/pool-points/vendors/${vendorId}/pool-points`, { query: { page, page_size: pageSize } }),
+        getAvailableLocationsByVendorID: (vendorId: string, locationType: string) =>
+            api<AvailableLocationsResponse>(`/pool-points/vendors/${vendorId}/available-locations`, { query: { location_type: locationType } }),
         updatePool: (id: string, req: UpdatePoolDTO) => api<UpdatePoolResponse>(`/pool-points/${id}`, { method: "PUT", body: req }),
         deletePool: (id: string) => api<BaseResponse>(`/pool-points/${id}`, { method: "DELETE" }),
     };

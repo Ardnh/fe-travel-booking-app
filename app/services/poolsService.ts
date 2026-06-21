@@ -20,6 +20,10 @@ export const usePoolsService = () => {
         const result = repo.getPoolByVendorID(vendorId, 1, 15);
     };
 
+    const getAvailableLocationsByVendorID = (vendorId: string, locationType: string) => {
+        return repo.getAvailableLocationsByVendorID(vendorId, locationType);
+    };
+
     const createPool = (vendorId: string, req: CreatePoolDTO) => {
         const slug = req.slug || req.name.toLowerCase().replace(/\s+/g, "-");
         return repo.createPool({ ...req, slug, vendor_id: vendorId });
@@ -34,6 +38,7 @@ export const usePoolsService = () => {
     };
 
     return {
+        getAvailableLocationsByVendorID,
         getAllPool,
         getPoolByID,
         getPoolByVendorID,

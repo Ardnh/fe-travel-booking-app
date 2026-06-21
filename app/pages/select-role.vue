@@ -1,4 +1,7 @@
 <script setup lang="ts">
+useHead({
+    title: `Select Role`,
+});
 const usersStore = useUsersStore();
 
 const { userProfile } = storeToRefs(usersStore);
