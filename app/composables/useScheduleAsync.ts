@@ -1,4 +1,4 @@
-export const useScheduleGetPoolsAsync = (vendorId: string) => {
+export const useScheduleGetPoolsAsync = (vendorId?: string) => {
     const config = useRuntimeConfig();
 
     return useLazyFetch(
