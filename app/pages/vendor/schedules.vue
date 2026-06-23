@@ -7,6 +7,10 @@ useHead({
     title: "Schedules",
 });
 
+const vendorStore = useVendorStore();
+const { vendor } = storeToRefs(vendorStore);
+const { getVendorByOwnerUserId } = vendorStore;
+
 const open = ref(false);
 
 const showModal = () => {
@@ -18,6 +22,11 @@ const handleSubmit = (data: any) => {
     console.log("submit schedule");
     console.log(toRaw(data));
 };
+
+onMounted(async () => {
+    if (vendor.value != null) return;
+    await getVendorByOwnerUserId();
+});
 </script>
 <template>
     <div class="w-full flex-1">

@@ -72,8 +72,18 @@ export interface PoolListResponse extends BaseResponse, BasePagination {
     data: Pool[];
 }
 
+export interface AvailablePoolsOptions {
+    label: string;
+    value: string;
+}
+
+export interface AvailablePools {
+    city: string;
+    total_pool: number;
+}
+
 export interface AvailableLocationsResponse extends BaseResponse {
-    data: string[];
+    data: AvailablePools[];
 }
 
 export interface CreatePoolResponse extends BaseResponse {
