@@ -1,4 +1,9 @@
-import type { CreateLayoutDto, Layouts, UpdateLayoutDto } from "~/models";
+import type {
+    CreateLayoutDto,
+    Layouts,
+    Options,
+    UpdateLayoutDto,
+} from "~/models";
 import { useLayoutsService } from "~/services";
 
 export const useLayoutsStore = defineStore("layouts", () => {
@@ -9,6 +14,7 @@ export const useLayoutsStore = defineStore("layouts", () => {
     // ------------ API STATE ------------
     const layouts = ref<Layouts[]>([]);
     const layout = ref<Layouts | null>(null);
+    const layoutOptions = ref<Options[]>([]);
 
     // ------------ UI STATE ------------
 
@@ -23,7 +29,14 @@ export const useLayoutsStore = defineStore("layouts", () => {
         const result = await run("getAllLayouts", () =>
             service.getAllLayouts(query),
         );
-        layouts.value = result.data;
+
+        if (result.success) {
+            layouts.value = result.data;
+            layoutOptions.value = result.data.map((l) => ({
+                label: l.name,
+                value: l.layout_id,
+            }));
+        }
     };
 
     const createLayout = async (data: CreateLayoutDto) => {
@@ -32,6 +45,10 @@ export const useLayoutsStore = defineStore("layouts", () => {
         );
         if (result.success) {
             layouts.value.push(result.data);
+            layoutOptions.value.push({
+                label: result.data.name,
+                value: result.data.layout_id,
+            });
         }
     };
 
@@ -44,6 +61,10 @@ export const useLayoutsStore = defineStore("layouts", () => {
             const index = layouts.value.findIndex((l) => l.layout_id === id);
             if (index !== -1) {
                 layouts.value[index] = updatedLayout;
+                layoutOptions.value[index] = {
+                    label: updatedLayout.name,
+                    value: updatedLayout.layout_id,
+                };
             }
         }
     };
@@ -55,6 +76,9 @@ export const useLayoutsStore = defineStore("layouts", () => {
         if (result.success) {
             layouts.value = layouts.value.filter(
                 (l) => l.layout_id !== layout_id,
+            );
+            layoutOptions.value = layoutOptions.value.filter(
+                (o) => o.value !== layout_id,
             );
         }
     };
@@ -68,5 +92,6 @@ export const useLayoutsStore = defineStore("layouts", () => {
         deleteLayout,
         isLoading,
         getError,
+        layoutOptions,
     };
 });

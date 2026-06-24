@@ -77,13 +77,20 @@ export interface AvailablePoolsOptions {
     value: string;
 }
 
-export interface AvailablePools {
-    city: string;
-    total_pool: number;
+export interface AvailablePoolsByCity {
+    city_name: string;
+    total_pools: number;
+    pools: PoolInfo[];
+}
+
+export interface PoolInfo {
+    pool_id: string;
+    vendor_id: string;
+    name: string;
 }
 
 export interface AvailableLocationsResponse extends BaseResponse {
-    data: AvailablePools[];
+    data: AvailablePoolsByCity[];
 }
 
 export interface CreatePoolResponse extends BaseResponse {

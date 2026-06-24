@@ -24,13 +24,16 @@ interface ScheduleBulkForm {
 
 // --- Instance ───────────────────────────────────────────────────────────────
 const poolsStore = usePoolsStore();
-const { poolOptions, poolLocationsOptions, poolLocations } =
+const layoutStore = useLayoutsStore();
+
+const { poolOptions, poolLocationsOptions, poolLocations, availablePools } =
     storeToRefs(poolsStore);
+const { layoutOptions, layouts } = storeToRefs(layoutStore);
 const { getPoolByVendorIdOptions, getAvailableLocationsByVendorID } =
     poolsStore;
+const { getAllLayouts } = layoutStore;
 
 // --- Fetch Data ───────────────────────────────────────────────────────────────
-
 const open = defineModel<boolean>("open", { default: false });
 const props = defineProps<{ data?: ScheduleBulkForm }>();
 const emit = defineEmits<{ submit: [data: ScheduleBulkForm] }>();
@@ -42,10 +45,10 @@ const close = () => {
 };
 
 // ── Data sumber (ganti dengan fetch sesungguhnya) ──────────────────────
-const originPools = [
-    { label: "Cikini — Jakarta Pusat", value: "pool-cikini" },
-    { label: "Lebak Bulus — Jakarta Selatan", value: "pool-lebakbulus" },
-];
+// const originPools = [
+//     { label: "Cikini — Jakarta Pusat", value: "pool-cikini" },
+//     { label: "Lebak Bulus — Jakarta Selatan", value: "pool-lebakbulus" },
+// ];
 // const cities = [
 //     { label: "Bandung — Jawa Barat", value: "Bandung" },
 //     { label: "Cirebon — Jawa Barat", value: "Cirebon" },
@@ -63,14 +66,14 @@ const originPools = [
 //         { label: "Cirebon Kota", value: "pool-cirebonkota" },
 //     ],
 // };
-const layouts = [
-    { label: "Executive 2-2 · 32 kursi", value: "layout-exec32", seats: 32 },
-    {
-        label: "Super Executive 2-1 · 21 kursi",
-        value: "layout-sexec21",
-        seats: 21,
-    },
-];
+// const layouts = [
+//     { label: "Executive 2-2 · 32 kursi", value: "layout-exec32", seats: 32 },
+//     {
+//         label: "Super Executive 2-1 · 21 kursi",
+//         value: "layout-sexec21",
+//         seats: 21,
+//     },
+// ];
 const dayNames = ["Mg", "Sn", "Sl", "Rb", "Km", "Jm", "Sb"]; // index 0..6
 
 // ── State form ─────────────────────────────────────────────────────────
@@ -85,11 +88,11 @@ const departureTimes = ref<string[]>(
 );
 const newTime = ref("");
 const validFrom = ref(props.data?.validFrom ?? "2026-07-01");
-const validTo = ref(props.data?.validTo ?? "2026-09-14");
+const validTo = ref(props.data?.validTo ?? "2026-07-5");
 const daysOfWeek = ref<number[]>(
     props.data?.daysOfWeek ?? [0, 1, 2, 3, 4, 5, 6],
 );
-const layoutId = ref(props.data?.layoutId ?? "layout-exec32");
+const layoutId = ref(props.data?.layoutId ?? "");
 const bands = ref<TimeBand[]>(
     props.data?.priceBands ?? [
         { label: "Pagi–Siang", from: "05:00", to: "17:00", price: 120000 },
@@ -134,22 +137,41 @@ const removeBand = (i: number) => bands.value.splice(i, 1);
 
 // ── Turunan / preview ──────────────────────────────────────────────────
 const totalSeat = computed(
-    () => layouts.find((l) => l.value === layoutId.value)?.seats ?? 0,
+    () =>
+        layouts.value.find((l) => l.layout_id === layoutId.value)?.seat_count ??
+        0,
 );
 
 const destinationPools = computed(() => {
-    if (destinationMode.value === "city")
-        return poolLocations.value[destinationCity.value] ?? [];
-    return (poolsByCity[destinationCity.value] ?? []).filter((p) =>
-        destinationPoolIds.value.includes(p.value),
-    );
+    if (destinationMode.value === "city") {
+        const cityPools = poolLocations.value.find(
+            (p) => p.city_name === destinationCity.value,
+        );
+        return cityPools?.pools
+            ? cityPools.pools.map((row) => {
+                  return {
+                      label: row.name,
+                      value: row.pool_id,
+                  };
+              })
+            : [];
+    }
+
+    // destinationPoolIds: string[] pools ids
+
+    return (destinationPoolIds.value ?? [])
+        .map((id) => {
+            const pool = availablePools.value.find((p) => p.pool_id === id);
+            return pool ? { label: pool.name, value: pool.pool_id } : null;
+        })
+        .filter((p): p is { label: string; value: string } => p !== null);
 });
 
 const countPoolLocationsByCity = computed(() => {
     const selectedPoolCity = poolLocations.value.find(
-        (p) => p.city === destinationCity.value,
+        (p) => p.city_name === destinationCity.value,
     );
-    return selectedPoolCity ? selectedPoolCity.total_pool : 0;
+    return selectedPoolCity ? selectedPoolCity.total_pools : 0;
 });
 
 const matchingDates = computed(() => {
@@ -188,6 +210,10 @@ const previewRows = computed(() => {
     const fmtDate = (d: Date) =>
         d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
     const dates = matchingDates.value;
+
+    console.log("destination pools");
+    console.log(destinationPools.value);
+
     outer: for (const d of dates) {
         for (const pool of destinationPools.value) {
             for (const t of departureTimes.value) {
@@ -203,6 +229,7 @@ const previewRows = computed(() => {
             }
         }
     }
+
     return rows;
 });
 
@@ -215,12 +242,12 @@ const submit = () => {
                 ? destinationCity.value
                 : undefined,
         destinationPoolIds: destinationPools.value.map((p) => p.value),
-        departureTimes: departureTimes.value,
+        departureTimes: toRaw(departureTimes.value),
         validFrom: validFrom.value,
         validTo: validTo.value,
-        daysOfWeek: daysOfWeek.value,
+        daysOfWeek: toRaw(daysOfWeek.value),
         layoutId: layoutId.value,
-        priceBands: bands.value,
+        priceBands: toRaw(bands.value),
     });
 };
 
@@ -233,6 +260,18 @@ const onOpenPoolMenu = async () => {
 const onOpenLocationMenu = async () => {
     if (poolLocationsOptions.value.length == 0) {
         await getAvailableLocationsByVendorID("city");
+    }
+};
+
+const onOpenLayoutMenu = async () => {
+    if (layoutOptions.value.length == 0) {
+        await getAllLayouts({
+            page: 1,
+            page_size: 50,
+            search: "",
+            sort_by: "",
+            sort_order: "",
+        });
     }
 };
 </script>
@@ -434,7 +473,10 @@ const onOpenLocationMenu = async () => {
                         <UFormField label="Layout kursi">
                             <USelect
                                 v-model="layoutId"
-                                :items="layouts"
+                                :items="layoutOptions"
+                                @update:open="onOpenLayoutMenu"
+                                placeholder="Pilih layout kursi"
+                                valueKey="value"
                                 class="w-full"
                             />
                         </UFormField>

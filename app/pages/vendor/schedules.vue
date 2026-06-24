@@ -24,6 +24,7 @@ const handleSubmit = (data: any) => {
 };
 
 onMounted(async () => {
+    console.log("mount schedules");
     if (vendor.value != null) return;
     await getVendorByOwnerUserId();
 });

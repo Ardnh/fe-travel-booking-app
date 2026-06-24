@@ -6,7 +6,8 @@ import type {
     PoolParams,
     Options,
     AvailablePoolsOptions,
-    AvailablePools,
+    PoolInfo,
+    AvailablePoolsByCity,
 } from "~/models";
 import { useAsync } from "~/composables";
 import { usePoolsService } from "~/services";
@@ -24,7 +25,8 @@ export const usePoolsStore = defineStore("pools", () => {
     const pool = ref<Pool | null>(null);
     const poolOptions = ref<Options[]>([]);
     const poolLocationsOptions = ref<AvailablePoolsOptions[]>([]);
-    const poolLocations = ref<AvailablePools[]>([]);
+    const poolLocations = ref<AvailablePoolsByCity[]>([]);
+    const availablePools = ref<PoolInfo[]>([]);
     const poolsPagination = ref<Pagination>({ ...INITIAL_PAGINATION });
 
     const getAllPool = async (params: PoolParams) => {
@@ -87,10 +89,11 @@ export const usePoolsStore = defineStore("pools", () => {
 
         if (result.success) {
             poolLocations.value = result.data;
+            availablePools.value = result.data.flatMap((row) => row.pools);
             poolLocationsOptions.value = result.data.map((row) => {
                 return {
-                    label: row.city,
-                    value: row.city,
+                    label: row.city_name,
+                    value: row.city_name,
                 };
             });
         }
@@ -143,5 +146,6 @@ export const usePoolsStore = defineStore("pools", () => {
         getAvailableLocationsByVendorID,
         poolLocationsOptions,
         poolLocations,
+        availablePools,
     };
 });

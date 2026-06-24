@@ -20,15 +20,25 @@ export interface Layouts {
     grid_size_y: number;
     seat_count: number;
     created_by: string;
-    layout_config: Cell[][];
+    layout_config: LayoutConfig[][];
+}
+
+export interface LayoutConfig {
+    type: string;
+    row: number;
+    col: number;
+    id: string;
+    status: string;
+    isWindow: boolean;
+    windowPosition: string;
 }
 
 export interface LayoutListResponse extends BaseResponse, BasePagination {
-    data: Cell[];
+    data: Layouts[];
 }
 
 export interface CreateLayoutResponse extends BaseResponse, BasePagination {
-    data: Cell;
+    data: Layouts;
 }
 
 export interface UpdateLayoutResponse extends CreateLayoutResponse {}
