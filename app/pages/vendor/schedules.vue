@@ -24,7 +24,6 @@ const handleSubmit = (data: any) => {
 };
 
 onMounted(async () => {
-    console.log("mount schedules");
     if (vendor.value != null) return;
     await getVendorByOwnerUserId();
 });
@@ -32,14 +31,7 @@ onMounted(async () => {
 <template>
     <div class="w-full flex-1">
         <div class="w-full flex justify-end items-center mb-3">
-            <UButton
-                label="New Schedule"
-                icon="i-lucide-plus"
-                size="md"
-                color="primary"
-                variant="solid"
-                @click="showModal"
-            />
+            <UButton label="New Schedule" icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="showModal" />
         </div>
 
         <!-- <UTable
@@ -58,8 +50,5 @@ onMounted(async () => {
         </div>  -->
     </div>
 
-    <FormNewSchedule
-        v-model:open="open"
-        @submit="(data: any) => handleSubmit(data)"
-    />
+    <FormNewSchedule v-model:open="open" @submit="(data: any) => handleSubmit(data)" />
 </template>

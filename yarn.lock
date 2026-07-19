@@ -691,7 +691,7 @@
     tinyglobby "^0.2.17"
     ufo "^1.6.4"
 
-"@nuxt/kit@^3.2.2 || ^4.0.0", "@nuxt/kit@^4.0.0", "@nuxt/kit@^4.2.0", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.4.2", "@nuxt/kit@^4.4.6", "@nuxt/kit@^4.4.8", "@nuxt/kit@>=3.0.0", "@nuxt/kit@4.4.8":
+"@nuxt/kit@^3.2.2 || ^4.0.0", "@nuxt/kit@^4.0.0", "@nuxt/kit@^4.2.0", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.4.2", "@nuxt/kit@^4.4.4", "@nuxt/kit@^4.4.6", "@nuxt/kit@^4.4.8", "@nuxt/kit@>=3.0.0", "@nuxt/kit@4.4.8":
   version "4.4.8"
   resolved "https://registry.npmjs.org/@nuxt/kit/-/kit-4.4.8.tgz"
   integrity sha512-ZUlZ5iYfyfJFDPluhn6ZxFWcsuxWbLnZBc8w3MAROcQ4lYfZ+qFpALBLSNlpc0zhOa++33EE+5PEbOAdVIY+dw==
@@ -1730,6 +1730,16 @@
   resolved "https://registry.npmjs.org/@vueuse/metadata/-/metadata-14.3.0.tgz"
   integrity sha512-BwxmbAzwAVF50+MW57GXOUEV61nFBGnlBvrTqj49PqWJu3uw7hdu72ztXeZ33RdZtDY6kO+bfCAE1PCn88Tktw==
 
+"@vueuse/nuxt@^14.3.0":
+  version "14.3.0"
+  resolved "https://registry.npmjs.org/@vueuse/nuxt/-/nuxt-14.3.0.tgz"
+  integrity sha512-Uxaz/DsNa3i7vHTSjZin5R17R5pt+MtpAifsfqhV1qiBZti1wYv+/S3xysCMHuuiWyLIbbignKxIsgG9ul5kEA==
+  dependencies:
+    "@nuxt/kit" "^4.4.4"
+    "@vueuse/core" "14.3.0"
+    "@vueuse/metadata" "14.3.0"
+    local-pkg "^1.1.2"
+
 "@vueuse/shared@^14.1.0", "@vueuse/shared@^14.3.0", "@vueuse/shared@14.3.0":
   version "14.3.0"
   resolved "https://registry.npmjs.org/@vueuse/shared/-/shared-14.3.0.tgz"
@@ -2131,10 +2141,15 @@ colortranslator@^5.0.0:
   resolved "https://registry.npmjs.org/colortranslator/-/colortranslator-5.0.0.tgz"
   integrity sha512-Z3UPUKasUVDFCDYAjP2fmlVRf1jFHJv1izAmPjiOa0OCIw1W7iC8PZ2GsoDa8uZv+mKyWopxxStT9q05+27h7w==
 
-commander@^11.1.0, commander@^13.1.0:
+commander@^11.1.0:
   version "11.1.0"
   resolved "https://registry.npmjs.org/commander/-/commander-11.1.0.tgz"
   integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
+
+commander@^13.1.0:
+  version "13.1.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-13.1.0.tgz"
+  integrity sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==
 
 commander@^2.20.0:
   version "2.20.3"
@@ -3728,7 +3743,7 @@ nth-check@^2.0.1:
   dependencies:
     boolbase "^1.0.0"
 
-nuxt@^4.4.2, nuxt@^4.4.8, nuxt@4.4.8:
+"nuxt@^3.0.0 || ^4.0.0-0", nuxt@^4.4.2, nuxt@^4.4.8, nuxt@4.4.8:
   version "4.4.8"
   resolved "https://registry.npmjs.org/nuxt/-/nuxt-4.4.8.tgz"
   integrity sha512-r/DGE4cNkEDclOw9tbJ18zqu+ix3me+7QCfumPdl5lBXGWgCajskzuq/HzDkHKfIZsn7ACVEjMLRNA2teh++bQ==
